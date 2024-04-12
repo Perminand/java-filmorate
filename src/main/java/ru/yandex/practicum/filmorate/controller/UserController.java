@@ -42,6 +42,7 @@ public class UserController {
         validate(user);
         User newUser = users.replace(user.getId(), user);
         log.debug("User update: " + newUser);
+        return newUser;
     }
 
     private void validate(User newUser) throws ConditionsNotMetException, DuplicatedDataException {
