@@ -23,23 +23,25 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User newUser) throws ConditionsNotMetException, DuplicatedDataException {
-        validate(newUser);
-
-        newUser.setId(getNextId());
-        if (newUser.getName() == null || newUser.getName().isBlank()) {
-            newUser.setName(newUser.getLogin());
+    public User create(@RequestBody User user) throws ConditionsNotMetException, DuplicatedDataException {
+        validate(user);
+        user.setId(getNextId());
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
-        return users.put(newUser.getId(), newUser);
+        User newUser = users.put(user.getId(), user);
+        log.debug("User created: " + newUser);
+        return newUser;
     }
 
     @PutMapping
-    public User update(@RequestBody User newUser) throws ConditionsNotMetException, DuplicatedDataException {
-        if (newUser.getId() == null) {
+    public User update(@RequestBody User user) throws ConditionsNotMetException, DuplicatedDataException {
+        if (user.getId() == null) {
             throw new ConditionsNotMetException("Id должен быть указан");
         }
-        validate(newUser);
-        return users.replace(newUser.getId(), newUser);
+        validate(user);
+        User newUser = users.replace(user.getId(), user);
+        log.debug("User update: " + newUser);
     }
 
     private void validate(User newUser) throws ConditionsNotMetException, DuplicatedDataException {
