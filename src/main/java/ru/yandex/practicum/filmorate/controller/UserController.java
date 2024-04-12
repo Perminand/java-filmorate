@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
     private final Map<Long, User> users = new HashMap<>();
 
@@ -22,18 +24,8 @@ public class UserController {
 
     @PostMapping
     public User create(@RequestBody User newUser) throws ConditionsNotMetException, DuplicatedDataException {
-        if (newUser.getEmail() == null || newUser.getEmail().isBlank()) {
-            throw new ConditionsNotMetException("Имейл должен быть указан");
-        }
-        if (newUser.getEmail().indexOf('@') < 0) {
-            throw new ConditionsNotMetException("Имейл должен содержать символ @");
-        }
-        if (findEmail(newUser)) {
-            throw new DuplicatedDataException("Этот имейл уже используется");
-        }
-        if (newUser.getBirthday().isAfter(LocalDate.now())) {
-            throw new ConditionsNotMetException("Дата рождения не может быть в будущем");
-        }
+        validate(newUser);
+
         newUser.setId(getNextId());
         if (newUser.getName() == null || newUser.getName().isBlank()) {
             newUser.setName(newUser.getLogin());
@@ -46,15 +38,31 @@ public class UserController {
         if (newUser.getId() == null) {
             throw new ConditionsNotMetException("Id должен быть указан");
         }
-        if (newUser.getEmail() != null) {
-            if (newUser.getEmail().indexOf('@') < 0) {
-                throw new ConditionsNotMetException("Имейл должен содержать символ @");
-            }
-            if (findEmail(newUser)) {
-                throw new DuplicatedDataException("Этот имейл уже используется");
-            }
-        }
+        validate(newUser);
         return users.replace(newUser.getId(), newUser);
+    }
+
+    private void validate(User newUser) throws ConditionsNotMetException, DuplicatedDataException {
+        if (newUser.getEmail() == null || newUser.getEmail().isBlank()) {
+            String s = "Имейл должен быть указан";
+            log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
+            throw new ConditionsNotMetException(s);
+        }
+        if (newUser.getEmail().indexOf('@') < 0) {
+            String s = "Имейл должен содержать символ @";
+            log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
+            throw new ConditionsNotMetException(s);
+        }
+        if (findEmail(newUser)) {
+            String s = "Этот имейл уже используется";
+            log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
+            throw new DuplicatedDataException(s);
+        }
+        if (newUser.getBirthday().isAfter(LocalDate.now())) {
+            String s = "Дата рождения не может быть в будущем";
+            log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getBirthday());
+            throw new ConditionsNotMetException("Дата рождения не может быть в будущем");
+        }
     }
 
     private boolean findEmail(User newUser) {
