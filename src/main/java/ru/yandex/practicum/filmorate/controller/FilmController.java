@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
+@Slf4j
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
 
@@ -21,36 +23,44 @@ public class FilmController {
 
     @PostMapping
     public Film create(@RequestBody Film film) throws ConditionsNotMetException {
-        if(film.getName()==null||film.getName().isBlank()){
-            throw new ConditionsNotMetException("название не может быть пустым");
-        }
-        if(film.getDescription().length()>200){
-            throw new ConditionsNotMetException("максимальная длина описания — 200 символов");
-        }
-        if(film.getReleaseDate().isBefore(LocalDate.of(1895,12,28))){
-            throw new ConditionsNotMetException("дата релиза — не раньше 28 декабря 1895 года");
-        }
-        if (film.getDuration().getSeconds()<0){
-            throw new ConditionsNotMetException("продолжительность фильма должна быть положительным числом.");
-        }
+        validate(film);
         film.setId(getNextId());
-        return films.put(film.getId(),film);
+        Film newFilm = films.put(film.getId(),film);
+        log.debug("film create" + newFilm);
+        return newFilm;
     }
 
     public Film update(@RequestBody Film film) throws ConditionsNotMetException {
+        validate(film);
+        Film newFilm = films.replace(film.getId(), film);
+        log.debug("film update" + newFilm);
+        return newFilm;
+    }
+
+    private void validate(Film film) throws ConditionsNotMetException {
+        log.info("Запущена валидация");
         if (film.getName() == null || film.getName().isBlank()) {
-            throw new ConditionsNotMetException("название не может быть пустым");
+            String s = "Название не может быть пустым";
+            log.info("Вызвано исключение: " + s + " Получено: " + film.getName());
+            throw new ConditionsNotMetException(s);
         }
         if (film.getDescription().length() > 200) {
-            throw new ConditionsNotMetException("максимальная длина описания — 200 символов");
+            String s = "максимальная длина описания — 200 символов";
+            log.info("Вызвано исключение: " + s + " Получено: " + film.getDescription().length() + " символов"
+                    + film.getDescription().length());
+            throw new ConditionsNotMetException(s);
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ConditionsNotMetException("дата релиза — не раньше 28 декабря 1895 года");
+            String s = "Дата релиза — не раньше 28 декабря 1895 года";
+            log.info("Вызвано исключение: " + s + " Получено: " + film.getReleaseDate());
+            throw new ConditionsNotMetException(s);
         }
         if (film.getDuration().getSeconds() < 0) {
-            throw new ConditionsNotMetException("продолжительность фильма должна быть положительным числом.");
+            String s = "Продолжительность фильма должна быть положительным числом.";
+            log.info("Вызвано исключение: " + s + " Получено: " + film.getDuration().getSeconds());
+                        throw new ConditionsNotMetException(s);
         }
-        return films.replace(film.getId(), film);
+
     }
     private long getNextId() {
         long currentMaxId = films.keySet()
