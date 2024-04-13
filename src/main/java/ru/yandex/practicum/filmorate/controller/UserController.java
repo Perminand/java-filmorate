@@ -22,7 +22,7 @@ public class UserController {
         return users.values();
     }
 
-    @PostMapping
+    @PostMapping("/user")
     public User create(@RequestBody User user) throws ConditionsNotMetException, DuplicatedDataException {
         validate(user);
         user.setId(getNextId());
@@ -34,7 +34,7 @@ public class UserController {
         return newUser;
     }
 
-    @PutMapping
+    @PutMapping("/user")
     public User update(@RequestBody User user) throws ConditionsNotMetException, DuplicatedDataException {
         if (user.getId() == null) {
             throw new ConditionsNotMetException("Id должен быть указан");
@@ -45,7 +45,7 @@ public class UserController {
         return newUser;
     }
 
-    private void validate(User newUser) throws ConditionsNotMetException, DuplicatedDataException {
+    public void validate(User newUser) throws ConditionsNotMetException, DuplicatedDataException {
         if (newUser.getEmail() == null || newUser.getEmail().isBlank()) {
             String s = "Имейл должен быть указан";
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
