@@ -19,32 +19,25 @@ class FilmControllerTest {
     private static final int PORT = 8080;
     static FilmController filmController = new FilmController();
 
-    @BeforeEach
-    public void startTest() throws IOException {
-        HttpServer server = HttpServer.create();
-        server.bind(new InetSocketAddress(PORT), 0);
-        server.start();
-    }
-
     @Test
     void createFilmOk() throws ConditionsNotMetException {
-        final Film validPost = Film.builder()
+        final Film validFilm = Film.builder()
                 .name("name")
                 .description("description")
                 .releaseDate(LocalDate.now())
                 .duration(Duration.ZERO).build();
-        filmController.validate(validPost);
+        filmController.validate(validFilm);
     }
 
     @Test
     void createFilmNameFiled() throws ConditionsNotMetException {
-        Film validPost = Film.builder()
+        Film validFilm = Film.builder()
                 .name("")
                 .description("description")
                 .releaseDate(LocalDate.now())
                 .duration(Duration.ZERO).build();
         ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
-                () -> filmController.validate(validPost));
+                () -> filmController.validate(validFilm));
         assertEquals("Название не может быть пустым",
                 exception.getMessage());
     }
@@ -55,38 +48,38 @@ class FilmControllerTest {
         for (int i=0;i<201;i++){
             s.append("t"); // Рандомный символ
         }
-        Film validPost = Film.builder()
+        Film validFilm = Film.builder()
                 .name("name")
                 .description(new String(s))
                 .releaseDate(LocalDate.now())
                 .duration(Duration.ZERO).build();
         ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
-                () -> filmController.validate(validPost));
+                () -> filmController.validate(validFilm));
         assertEquals("Максимальная длина описания — 200 символов",
                 exception.getMessage());
     }
 
     @Test
     void createFilmReleaseDateFiled() throws ConditionsNotMetException {
-        Film validPost = Film.builder()
+        Film validFilm = Film.builder()
                 .name("name")
                 .description("description")
                 .releaseDate(LocalDate.of(1894,1,1))
                 .duration(Duration.ZERO).build();
         ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
-                () -> filmController.validate(validPost));
+                () -> filmController.validate(validFilm));
         assertEquals("Дата релиза — не раньше 28 декабря 1895 года",
                 exception.getMessage());
     }
     @Test
     void createFilmDurationFiled() throws ConditionsNotMetException {
-        Film validPost = Film.builder()
+        Film validFilm = Film.builder()
                 .name("name")
                 .description("description")
                 .releaseDate(LocalDate.of(1897,1,1))
                 .duration(Duration.ofSeconds(-1)).build();
         ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
-                () -> filmController.validate(validPost));
+                () -> filmController.validate(validFilm));
         assertEquals("Продолжительность фильма должна быть положительным числом",
                 exception.getMessage());
     }
