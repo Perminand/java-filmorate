@@ -14,6 +14,7 @@ import java.util.Map;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
+    private static final int MAX_lENGTH_DESCRIPTION = 200;
     private final Map<Long, Film> films = new HashMap<>();
 
     @GetMapping
@@ -21,7 +22,7 @@ public class FilmController {
         return films.values();
     }
 
-    @PostMapping
+    @PostMapping("/film")
     public Film create(@RequestBody Film film) throws ConditionsNotMetException {
         validate(film);
         film.setId(getNextId());
@@ -30,6 +31,7 @@ public class FilmController {
         return newFilm;
     }
 
+    @PutMapping("/film")
     public Film update(@RequestBody Film film) throws ConditionsNotMetException {
         validate(film);
         Film newFilm = films.replace(film.getId(), film);
@@ -37,17 +39,17 @@ public class FilmController {
         return newFilm;
     }
 
-    private void validate(Film film) throws ConditionsNotMetException {
+    public void validate(Film film) throws ConditionsNotMetException {
         log.info("Запущена валидация");
         if (film.getName() == null || film.getName().isBlank()) {
             String s = "Название не может быть пустым";
             log.info("Вызвано исключение: " + s + " Получено: " + film.getName());
             throw new ConditionsNotMetException(s);
         }
-        if (film.getDescription().length() > 200) {
-            String s = "максимальная длина описания — 200 символов";
+        if (film.getDescription().length() > MAX_lENGTH_DESCRIPTION) {
+            String s = "Максимальная длина описания — " + MAX_lENGTH_DESCRIPTION + " символов";
             log.info("Вызвано исключение: " + s + " Получено: " + film.getDescription().length() + " символов"
-                    + film.getDescription().length());
+                    );
             throw new ConditionsNotMetException(s);
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
@@ -56,7 +58,7 @@ public class FilmController {
             throw new ConditionsNotMetException(s);
         }
         if (film.getDuration().getSeconds() < 0) {
-            String s = "Продолжительность фильма должна быть положительным числом.";
+            String s = "Продолжительность фильма должна быть положительным числом";
             log.info("Вызвано исключение: " + s + " Получено: " + film.getDuration().getSeconds());
                         throw new ConditionsNotMetException(s);
         }
