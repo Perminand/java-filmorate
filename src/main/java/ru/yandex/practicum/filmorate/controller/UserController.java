@@ -59,7 +59,7 @@ public class UserController {
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
             throw new ConditionsNotMetException(s);
         }
-        if(!isValidEmailAddress(newUser.getEmail())){
+        if (!isValidEmailAddress(newUser.getEmail())) {
             final String s = "Не корректно введен Имейл";
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
             throw new ConditionsNotMetException(s);
