@@ -64,6 +64,7 @@ public class FilmController {
                         throw new ConditionsNotMetException(s);
         }
     }
+
     private long getNextId() {
         long currentMaxId = films.keySet()
                 .stream()

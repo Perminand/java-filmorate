@@ -88,6 +88,7 @@ public class UserController {
         }
         return false;
     }
+
     private long getNextId() {
         long currentMaxId = users.keySet()
                 .stream()
