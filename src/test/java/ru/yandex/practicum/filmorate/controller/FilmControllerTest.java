@@ -47,7 +47,7 @@ class FilmControllerTest {
     @Test
     void createFilmDescriptionFiled() {
         final StringBuilder s = new StringBuilder(); // Создаем строку больше 201 символа
-        for (int i = 0;i < 201; i++){
+        for (int i = 0;i < 201; i++) {
             s.append("t"); // Рандомный символ
         }
         final Film validFilm = Film.builder()
