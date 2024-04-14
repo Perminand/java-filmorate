@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class UserControllerTest {
 
     private static final int PORT = 8080;
-    static UserController userController = new UserController();
+    static final UserController userController = new UserController();
 
     @Test
     void createUserOk() throws ConditionsNotMetException, DuplicatedDataException {
@@ -27,8 +27,14 @@ class UserControllerTest {
     }
 
     @Test
+    void createUserNullFiled() {
+        final User validUser = null;
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> userController.validate(validUser));
+    }
+    @Test
     void createUserEmailFiled() throws ConditionsNotMetException {
-        User validUser = User.builder()
+        final User validUser = User.builder()
                 .name("name")
                 .login("login")
                 .email("")
@@ -47,7 +53,7 @@ class UserControllerTest {
 
     @Test
     void createUserDoubleEmailFiled() throws ConditionsNotMetException {
-                User validUser = User.builder()
+        final User validUser = User.builder()
                 .name("name")
                 .login("login")
                 .email("a@aau")
@@ -55,12 +61,12 @@ class UserControllerTest {
                 .build();
         ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
                 () -> userController.validate(validUser));
-        assertEquals("Не корректно введен Имайл",
+        assertEquals("Не корректно введен Имейл",
                 exception.getMessage());
     }
     @Test
     void createUserBirthdayFiled() throws ConditionsNotMetException {
-        User validUser = User.builder()
+        final User validUser = User.builder()
                 .name("name")
                 .login("login")
                 .email("a@aa.ru")
@@ -70,5 +76,16 @@ class UserControllerTest {
                 () -> userController.validate(validUser));
         assertEquals("Дата рождения не может быть в будущем",
                 exception.getMessage());
+    }
+
+    @Test
+    void createUserNullNameOk() throws ConditionsNotMetException, DuplicatedDataException {
+        final User validUser = User.builder()
+                .name(null)
+                .login("login")
+                .email("a@aa.ru")
+                .birthday(LocalDate.now())
+                .build();
+        userController.validate(validUser);
     }
 }
