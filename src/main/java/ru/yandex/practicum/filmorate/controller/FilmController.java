@@ -36,6 +36,11 @@ public class FilmController {
     @PutMapping
     public Film update(@RequestBody Film film) throws ConditionsNotMetException {
         validate(film);
+        if(!films.containsKey(film.getId())) {
+            final String s = "Нет запрошенного ИД";
+            log.info("Вызвано исключение: " + s + " Получено: " + film.getName());
+            throw new ConditionsNotMetException(s);
+        }
         films.replace(film.getId(), film);
         log.debug("film update" + film);
         return film;
