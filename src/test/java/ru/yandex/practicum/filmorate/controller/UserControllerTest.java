@@ -32,6 +32,7 @@ class UserControllerTest {
         NullPointerException exception = assertThrows(NullPointerException.class,
                 () -> userController.validate(validUser));
     }
+
     @Test
     void createUserEmailFiled() throws ConditionsNotMetException {
         final User validUser = User.builder()
@@ -64,6 +65,7 @@ class UserControllerTest {
         assertEquals("Не корректно введен Имейл",
                 exception.getMessage());
     }
+
     @Test
     void createUserBirthdayFiled() throws ConditionsNotMetException {
         final User validUser = User.builder()
