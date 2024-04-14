@@ -30,6 +30,7 @@ class FilmControllerTest {
         NullPointerException exception = assertThrows(NullPointerException.class,
                 () -> filmController.validate(validFilm));
     }
+
     @Test
     void createFilmNameFiled() {
         final Film validFilm = Film.builder()
@@ -46,7 +47,7 @@ class FilmControllerTest {
     @Test
     void createFilmDescriptionFiled() {
         final StringBuilder s = new StringBuilder(); // Создаем строку больше 201 символа
-        for (int i=0;i<201;i++){
+        for (int i = 0;i < 201; i++){
             s.append("t"); // Рандомный символ
         }
         final Film validFilm = Film.builder()
@@ -72,6 +73,7 @@ class FilmControllerTest {
         assertEquals("Дата релиза — не раньше 28 декабря 1895 года",
                 exception.getMessage());
     }
+
     @Test
     void createFilmDurationFiled() {
         final Film validFilm = Film.builder()
