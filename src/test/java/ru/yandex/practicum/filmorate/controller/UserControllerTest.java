@@ -5,8 +5,8 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -37,66 +37,75 @@ class UserControllerTest {
 
     @Test
     void createUserNullFiled() {
-        final User validUser = null;
+        final User user = null;
         assertThrows(NullPointerException.class,
-                () -> userController.validate(validUser));
+                () -> userController.validate(user));
     }
 
     @Test
     void createUserEmailFiled() throws ValidationException {
-        final User validUser = User.builder()
+        final User user = User.builder()
                 .name("name")
                 .login("login")
                 .email("")
                 .birthday(LocalDate.now())
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.validate(validUser));
-        assertEquals("Имейл должен быть указан",
-                exception.getMessage());
-        validUser.setEmail("asd");
-        exception = assertThrows(ValidationException.class,
-                () -> userController.validate(validUser));
-        assertEquals("Имейл должен содержать символ @",
-                exception.getMessage());
+        assertFalse(validator.validate(user).isEmpty());
     }
 
     @Test
-    void createUserDoubleEmailFiled() throws ValidationException {
-        final User validUser = User.builder()
+    void createUserNullEmailFiled() throws ValidationException {
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> userController.create(User.builder()
+                        .name("name")
+                        .login("login")
+                        .email(null)
+                        .birthday(LocalDate.now())
+                        .build()));
+        assertEquals("email is marked non-null but is null", exception.getMessage());
+    }
+
+    @Test
+    void createUserDoubleEmailFiled() {
+        User user1 = User.builder()
                 .name("name")
                 .login("login")
-                .email("a@aau")
+                .email("a@aa")
                 .birthday(LocalDate.now())
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.validate(validUser));
-        assertEquals("Не корректно введен Имейл",
-                exception.getMessage());
+        User user2 = User.builder()
+                .name("name")
+                .login("login")
+                .email("a@aa")
+                .birthday(LocalDate.now())
+                .build();
+        assertThrows(DuplicatedDataException.class, () -> {
+            userController.create(user1);
+            userController.create(user2);
+        });
     }
-
     @Test
     void createUserBirthdayFiled() throws ValidationException {
-        final User validUser = User.builder()
+        final User user = User.builder()
                 .name("name")
                 .login("login")
                 .email("a@aa.ru")
                 .birthday(LocalDate.now().plusYears(1))
                 .build();
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.validate(validUser));
+                () -> userController.validate(user));
         assertEquals("Дата рождения не может быть в будущем",
                 exception.getMessage());
     }
 
     @Test
     void createUserNullNameOk() throws ValidationException, DuplicatedDataException {
-        final User validUser = User.builder()
+        final User user = User.builder()
                 .name(null)
                 .login("login")
                 .email("a@aa.ru")
                 .birthday(LocalDate.now())
                 .build();
-        userController.validate(validUser);
+        userController.validate(user);
     }
 }
