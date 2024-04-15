@@ -24,6 +24,7 @@ class UserControllerTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
+
     @Test
     void createUserOk() throws ValidationException {
         final User user = User.builder()
@@ -84,6 +85,7 @@ class UserControllerTest {
             userController.create(user2);
         });
     }
+
     @Test
     void createUserBirthdayFiled() throws ValidationException {
         final User user = User.builder()
