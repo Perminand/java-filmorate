@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
-
 import java.time.LocalDate;
 
 @Data
@@ -17,7 +16,7 @@ public class Film {
     @NotNull
     @NotBlank
     private String name;
-    @Size(max=200)
+    @Size(max = 200)
     private String description;
     private LocalDate releaseDate;
     @Positive
