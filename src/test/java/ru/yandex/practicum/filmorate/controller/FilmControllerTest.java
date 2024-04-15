@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ class FilmControllerTest {
     static final FilmController filmController = new FilmController();
 
     @Test
-    void createFilmOk() throws ConditionsNotMetException {
+    void createFilmOk() throws ValidationException {
         final Film validFilm = Film.builder()
                 .name("name")
                 .description("description")
@@ -38,7 +38,7 @@ class FilmControllerTest {
                 .description("description")
                 .releaseDate(LocalDate.now())
                 .duration(0).build();
-        ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> filmController.validate(validFilm));
         assertEquals("Название не может быть пустым",
                 exception.getMessage());
@@ -55,7 +55,7 @@ class FilmControllerTest {
                 .description(new String(s))
                 .releaseDate(LocalDate.now())
                 .duration(0).build();
-        ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> filmController.validate(validFilm));
         assertEquals("Максимальная длина описания — 200 символов",
                 exception.getMessage());
@@ -68,7 +68,7 @@ class FilmControllerTest {
                 .description("description")
                 .releaseDate(LocalDate.of(1894,1,1))
                 .duration(0).build();
-        ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> filmController.validate(validFilm));
         assertEquals("Дата релиза — не раньше 28 декабря 1895 года",
                 exception.getMessage());
@@ -81,7 +81,7 @@ class FilmControllerTest {
                 .description("description")
                 .releaseDate(LocalDate.of(1897,1,1))
                 .duration(-1).build();
-        ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> filmController.validate(validFilm));
         assertEquals("Продолжительность фильма должна быть положительным числом",
                 exception.getMessage());

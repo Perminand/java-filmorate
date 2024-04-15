@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
@@ -25,7 +25,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film) throws ConditionsNotMetException {
+    public Film create(@RequestBody Film film) throws ValidationException {
         validate(film);
         film.setId(getNextId());
         films.put(film.getId(), film);
@@ -34,39 +34,39 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film) throws ConditionsNotMetException {
+    public Film update(@RequestBody Film film) throws ValidationException {
         validate(film);
         if (!films.containsKey(film.getId())) {
             final String s = "Нет запрошенного ИД";
             log.info("Вызвано исключение: " + s + " Получено: " + film.getName());
-            throw new ConditionsNotMetException(s);
+            throw new ValidationException(s);
         }
         films.replace(film.getId(), film);
         log.debug("film update" + film);
         return film;
     }
 
-    public void validate(final Film film) throws ConditionsNotMetException {
+    public void validate(final Film film) throws ValidationException {
         if (film.getName() == null || film.getName().isBlank()) {
             final String s = "Название не может быть пустым";
             log.info("Вызвано исключение: " + s + " Получено: " + film.getName());
-            throw new ConditionsNotMetException(s);
+            throw new ValidationException(s);
         }
         if (film.getDescription().length() > MAX_lENGTH_DESCRIPTION) {
             final String s = "Максимальная длина описания — " + MAX_lENGTH_DESCRIPTION + " символов";
             log.info("Вызвано исключение: " + s + " Получено: " + film.getDescription().length() + " символов"
                     );
-            throw new ConditionsNotMetException(s);
+            throw new ValidationException(s);
         }
         if (film.getReleaseDate().isBefore(DATE_MARK)) {
             final String s = "Дата релиза — не раньше 28 декабря 1895 года";
             log.info("Вызвано исключение: " + s + " Получено: " + film.getReleaseDate());
-            throw new ConditionsNotMetException(s);
+            throw new ValidationException(s);
         }
         if (film.getDuration() < 0) {
             final String s = "Продолжительность фильма должна быть положительным числом";
             log.info("Вызвано исключение: " + s + " Получено: " + film.getDuration());
-                        throw new ConditionsNotMetException(s);
+                        throw new ValidationException(s);
         }
     }
 

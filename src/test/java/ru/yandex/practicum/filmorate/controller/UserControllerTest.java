@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -16,7 +16,7 @@ class UserControllerTest {
     static final UserController userController = new UserController();
 
     @Test
-    void createUserOk() throws ConditionsNotMetException, DuplicatedDataException {
+    void createUserOk() throws ValidationException, DuplicatedDataException {
         final User validUser = User.builder()
                 .name("name")
                 .login("login")
@@ -34,54 +34,54 @@ class UserControllerTest {
     }
 
     @Test
-    void createUserEmailFiled() throws ConditionsNotMetException {
+    void createUserEmailFiled() throws ValidationException {
         final User validUser = User.builder()
                 .name("name")
                 .login("login")
                 .email("")
                 .birthday(LocalDate.now())
                 .build();
-        ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> userController.validate(validUser));
         assertEquals("Имейл должен быть указан",
                 exception.getMessage());
         validUser.setEmail("asd");
-        exception = assertThrows(ConditionsNotMetException.class,
+        exception = assertThrows(ValidationException.class,
                 () -> userController.validate(validUser));
         assertEquals("Имейл должен содержать символ @",
                 exception.getMessage());
     }
 
     @Test
-    void createUserDoubleEmailFiled() throws ConditionsNotMetException {
+    void createUserDoubleEmailFiled() throws ValidationException {
         final User validUser = User.builder()
                 .name("name")
                 .login("login")
                 .email("a@aau")
                 .birthday(LocalDate.now())
                 .build();
-        ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> userController.validate(validUser));
         assertEquals("Не корректно введен Имейл",
                 exception.getMessage());
     }
 
     @Test
-    void createUserBirthdayFiled() throws ConditionsNotMetException {
+    void createUserBirthdayFiled() throws ValidationException {
         final User validUser = User.builder()
                 .name("name")
                 .login("login")
                 .email("a@aa.ru")
                 .birthday(LocalDate.now().plusYears(1))
                 .build();
-        ConditionsNotMetException exception = assertThrows(ConditionsNotMetException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> userController.validate(validUser));
         assertEquals("Дата рождения не может быть в будущем",
                 exception.getMessage());
     }
 
     @Test
-    void createUserNullNameOk() throws ConditionsNotMetException, DuplicatedDataException {
+    void createUserNullNameOk() throws ValidationException, DuplicatedDataException {
         final User validUser = User.builder()
                 .name(null)
                 .login("login")

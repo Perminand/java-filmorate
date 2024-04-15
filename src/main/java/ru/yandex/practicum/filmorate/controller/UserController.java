@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody final User user) throws ConditionsNotMetException, DuplicatedDataException {
+    public User create(@RequestBody final User user) throws ValidationException, DuplicatedDataException {
         validate(user);
         user.setId(getNextId());
         if (user.getName() == null || user.getName().isBlank()) {
@@ -38,9 +38,9 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody final User user) throws ConditionsNotMetException, DuplicatedDataException {
+    public User update(@RequestBody final User user) throws ValidationException, DuplicatedDataException {
         if (user.getId() == null) {
-            throw new ConditionsNotMetException("id должен быть указан");
+            throw new ValidationException("id должен быть указан");
         }
         validate(user);
         users.replace(user.getId(), user);
@@ -48,21 +48,21 @@ public class UserController {
         return user;
     }
 
-    public void validate(final User newUser) throws ConditionsNotMetException, DuplicatedDataException {
+    public void validate(final User newUser) throws ValidationException, DuplicatedDataException {
         if (newUser.getEmail() == null || newUser.getEmail().isBlank()) {
             final String s = "Имейл должен быть указан";
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
-            throw new ConditionsNotMetException(s);
+            throw new ValidationException(s);
         }
         if (newUser.getEmail().indexOf('@') < 0) {
             final String s = "Имейл должен содержать символ @";
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
-            throw new ConditionsNotMetException(s);
+            throw new ValidationException(s);
         }
         if (!isValidEmailAddress(newUser.getEmail())) {
             final String s = "Не корректно введен Имейл";
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
-            throw new ConditionsNotMetException(s);
+            throw new ValidationException(s);
         }
         if (findEmail(newUser)) {
             final String s = "Этот имейл уже используется";
@@ -72,7 +72,7 @@ public class UserController {
         if (newUser.getBirthday().isAfter(LocalDate.now())) {
             final String s = "Дата рождения не может быть в будущем";
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getBirthday());
-            throw new ConditionsNotMetException(s);
+            throw new ValidationException(s);
         }
     }
 
@@ -81,12 +81,12 @@ public class UserController {
     }
 
     private boolean findEmail(final User newUser) {
-        for (User user : users.values()) {
-            if (user.getEmail().equals(newUser.getEmail())) {
-                return true;
-            }
-        }
-        return false;
+        return users.values()
+                .stream()
+                .map(User::getEmail)
+                .filter(item -> item.equals(newUser.getEmail()))
+                .findFirst()
+                .isPresent();
     }
 
     private long getNextId() {
