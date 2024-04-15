@@ -96,7 +96,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void updateFilmValidId(){
+    void updateFilmValidId() {
         final Film film = Film.builder()
                 .name("name")
                 .description("description")
