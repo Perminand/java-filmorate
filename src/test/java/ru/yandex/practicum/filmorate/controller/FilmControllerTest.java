@@ -12,12 +12,11 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class FilmControllerTest {
     private Validator validator;
-    private FilmController filmController = new FilmController();
+    private final FilmController filmController = new FilmController();
 
     @BeforeEach
     public void setUp() {
@@ -34,6 +33,7 @@ class FilmControllerTest {
                 .duration(1).build();
         assertTrue(validator.validate(film).isEmpty());
     }
+
     @Test
     void createFilmNullFiled() {
         final Film film = null;
@@ -66,7 +66,7 @@ class FilmControllerTest {
         final String s = "t".repeat(201); // Создаем строку 201 символ
         final Film film = Film.builder()
                 .name("name")
-                .description(new String(s))
+                .description(s)
                 .releaseDate(LocalDate.now())
                 .duration(1).build();
         assertFalse(validator.validate(film).isEmpty());
@@ -84,6 +84,7 @@ class FilmControllerTest {
         assertEquals("Дата релиза — не раньше 28 декабря 1895 года",
                 exception.getMessage());
     }
+
     @Test
     void createFilmDurationFiled() {
         final Film film = Film.builder()
@@ -92,5 +93,36 @@ class FilmControllerTest {
                 .releaseDate(LocalDate.of(1897,1,1))
                 .duration(-1).build();
         assertFalse(validator.validate(film).isEmpty());
+    }
+
+    @Test
+    void updateFilmValidId(){
+        final Film film = Film.builder()
+                .name("name")
+                .description("description")
+                .releaseDate(LocalDate.of(1897, 1, 1))
+                .duration(1).build();
+        filmController.create(film);
+        Film newFilm = film;
+        newFilm.setName("newName");
+        newFilm.setId(Long.valueOf("1"));
+        filmController.update(newFilm);
+        assertTrue(filmController.getAll().stream()
+                .map(Film::getName)
+                .anyMatch(item -> item.equals("newName")));
+    }
+
+    @Test
+    void updateFilmNoValidId() {
+        final Film film = Film.builder()
+                .id(Long.valueOf("1"))
+                .name("name")
+                .description("description")
+                .releaseDate(LocalDate.of(1897, 1, 1))
+                .duration(1).build();
+        ValidationException exception = assertThrows(ValidationException.class, () ->
+                filmController.update(film));
+        assertEquals("Нет запрошенного ИД", exception.getMessage());
+
     }
 }
