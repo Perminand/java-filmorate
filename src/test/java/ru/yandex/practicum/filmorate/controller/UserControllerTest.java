@@ -1,5 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
@@ -7,29 +11,34 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
 
-    private static final int PORT = 8080;
+    private Validator validator;
+
     static final UserController userController = new UserController();
 
+    @BeforeEach
+    public void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
     @Test
-    void createUserOk() throws ValidationException, DuplicatedDataException {
-        final User validUser = User.builder()
+    void createUserOk() throws ValidationException {
+        final User user = User.builder()
                 .name("name")
                 .login("login")
                 .email("a@aa.ru")
                 .birthday(LocalDate.now())
                 .build();
-        userController.validate(validUser);
+        assertTrue(validator.validate(user).isEmpty());
     }
 
     @Test
     void createUserNullFiled() {
         final User validUser = null;
-        NullPointerException exception = assertThrows(NullPointerException.class,
+        assertThrows(NullPointerException.class,
                 () -> userController.validate(validUser));
     }
 
