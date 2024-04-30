@@ -37,7 +37,7 @@ public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorag
     public Collection<Film> getPopular(int count) {
         List<Film> filmList = new ArrayList<>(storage.values()
                 .stream()
-                .sorted((o1, o2) -> Integer.compare(o2.getLikes().size(),o1.getLikes().size()))
+                .sorted((o1, o2) -> Integer.compare(o2.getLikes().size(), o1.getLikes().size()))
                 .limit(count).collect(Collectors.toList()));
         return filmList;
     }
@@ -45,7 +45,7 @@ public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorag
     @Override
     public Optional<Film> addLike(long filmId, long userId) {
         findId(filmId);
-        Film film = storage.get(filmId);
+        final Film film = storage.get(filmId);
         Set<Long> likes = film.getLikes();
         if (likes == null) {
             likes = new HashSet<>();

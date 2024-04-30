@@ -16,7 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class FilmService implements IntService<Film> {
     private final LocalDate dateMark;
-    private FilmStorage filmStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
     public FilmService(@Value("${filmorate.date-mark}") LocalDate dateMark,
@@ -31,13 +31,14 @@ public class FilmService implements IntService<Film> {
     }
 
     @Override
-    public Optional<Film> findById(long id){
+    public Optional<Film> findById(long id) {
         return filmStorage.getById(id);
     }
 
     public Collection<Film> getPopular(int count) {
         return filmStorage.getPopular(count);
     }
+
     @Override
     public Optional<Film> create(Film data) {
         validate(data);
@@ -55,8 +56,8 @@ public class FilmService implements IntService<Film> {
         return filmStorage.update(data);
     }
 
-    public Optional<Film> addLike(long filmId, long userId){
-        return filmStorage.addLike(filmId,userId);
+    public Optional<Film> addLike(long filmId, long userId) {
+        return filmStorage.addLike(filmId, userId);
     }
 
     private void validate(final Film film) throws ValidationException {
@@ -68,7 +69,7 @@ public class FilmService implements IntService<Film> {
     }
 
     public Optional<Film> deleteLike(long filmId, long userId) {
-        return filmStorage.deleteLike(filmId,userId);
+        return filmStorage.deleteLike(filmId, userId);
     }
 
 

@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Data
+@Builder
 @AllArgsConstructor
 public class User {
     private Long id;

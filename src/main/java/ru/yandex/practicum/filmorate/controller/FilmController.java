@@ -36,8 +36,8 @@ public class FilmController implements Controller<Film> {
 
     @GetMapping("/popular")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<Film> getPopular(@RequestParam(required=false) Integer count){
-        if(count == null){
+    public Collection<Film> getPopular(@RequestParam(required = false) Integer count) {
+        if (count == null) {
             count = 10;
         }
         return filmService.getPopular(count);
@@ -50,7 +50,6 @@ public class FilmController implements Controller<Film> {
     public Collection<Film> getAll() {
         return filmService.findAll();
     }
-
 
 
     @Override
@@ -70,14 +69,14 @@ public class FilmController implements Controller<Film> {
     @PutMapping("/{filmId}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public Film addLike(@PathVariable("filmId") long filmId,
-                            @PathVariable("userId") long userId) {
+                        @PathVariable("userId") long userId) {
         return filmService.addLike(filmId, userId).get();
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public Film deleteLike(@PathVariable("filmId") long filmId,
-                        @PathVariable("userId") long userId) {
+                           @PathVariable("userId") long userId) {
         return filmService.deleteLike(filmId, userId).get();
     }
 

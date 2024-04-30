@@ -12,7 +12,7 @@ import java.util.Optional;
 @Slf4j
 public class DataStorage<T> {
     protected long generateId = 0L;
-    protected Map<Long, T> storage = new HashMap<>();
+    protected final Map<Long, T> storage = new HashMap<>();
 
     public Collection<T> getAll() {
         return storage.values();

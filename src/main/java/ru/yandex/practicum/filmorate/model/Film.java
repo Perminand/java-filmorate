@@ -6,9 +6,9 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
-import java.util.Set;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
@@ -23,4 +23,4 @@ public class Film {
     @Positive
     private int duration;
     private Set<Long> likes;
-    }
+}

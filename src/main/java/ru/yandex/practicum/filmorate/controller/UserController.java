@@ -9,8 +9,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -26,7 +24,6 @@ public class UserController implements Controller<User> {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
 
 
     @Override
@@ -82,7 +79,7 @@ public class UserController implements Controller<User> {
     @ResponseStatus(HttpStatus.OK)
     public User deleteFriends(@PathVariable("userId") long userId,
                               @PathVariable("friendId") long friendId) {
-        return userService.deleteFriend(userId, friendId).orElseThrow(()-> new NullPointerException());
+        return userService.deleteFriend(userId, friendId).orElseThrow(() -> new NullPointerException());
     }
 
 

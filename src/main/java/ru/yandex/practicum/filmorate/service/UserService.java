@@ -54,14 +54,14 @@ public class UserService implements IntService<User> {
         if (data.getId() == null) {
             throw new ValidationException("ID должен быть указан");
         }
-        Optional<User> userOptional = userStorage.getById(data.getId());
-        userOptional.orElseThrow(()-> new NullFoundIdException("Нет user c ID:"+data.getId()));
+        final Optional<User> userOptional = userStorage.getById(data.getId());
+        userOptional.orElseThrow(() -> new NullFoundIdException("Нет user c ID:" + data.getId()));
         validate(data);
         log.debug("User c ID " + data.getId() + " обновлен");
         return userStorage.update(data);
     }
 
-    public void validate(final User newUser)  {
+    public void validate(final User newUser) {
         if (userStorage.findEmail(newUser)) {
             final String s = "Этот имейл уже используется";
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
@@ -73,8 +73,6 @@ public class UserService implements IntService<User> {
             throw new ValidationException(s);
         }
     }
-
-
 
 
     public Optional<User> addFriend(long userId, long friendId) {

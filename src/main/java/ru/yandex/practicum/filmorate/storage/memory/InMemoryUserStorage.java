@@ -38,7 +38,7 @@ public class InMemoryUserStorage extends DataStorage<User> implements UserStorag
 
     @Override
     public Collection<User> getFriends(long id) {
-        User user = storage.get(id);
+        final User user = storage.get(id);
         if (user == null) {
             throw new NullFoundIdException("Нет user с ID: " + id);
         }
@@ -76,7 +76,7 @@ public class InMemoryUserStorage extends DataStorage<User> implements UserStorag
 
         findId(userId);
         findId(friendId);
-        User user = storage.get(userId);
+        final User user = storage.get(userId);
         Set<Long> userFriends = user.getFriends();
         if (userFriends == null) {
             userFriends = new HashSet<>();
@@ -91,24 +91,24 @@ public class InMemoryUserStorage extends DataStorage<User> implements UserStorag
         friendFriends.add(userId);
         storage.get(friendId).setFriends(friendFriends);
 
-        return Optional.ofNullable(user);
+        return Optional.of(user);
     }
 
     @Override
     public Optional<User> deleteFriend(long userId, long friendId) {
         final User user = storage.get(userId);
         final User friendUser = storage.get(friendId);
-        if(user==null){
+        if (user == null) {
             throw new NullFoundIdException("Нет user с ID: " + userId);
-        } else if (friendUser==null) {
+        } else if (friendUser == null) {
             throw new NullFoundIdException("Нет friends с ID: " + friendId);
         }
         final Set<Long> setUser = user.getFriends();
-        if(setUser!=null) {
+        if (setUser != null) {
             setUser.remove(friendId);
         }
         final Set<Long> setFriends = friendUser.getFriends();
-        if(setFriends!=null){
+        if (setFriends != null) {
             setFriends.remove(userId);
         }
         return Optional.ofNullable(storage.get(userId));
