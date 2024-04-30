@@ -35,11 +35,11 @@ public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorag
 
     @Override
     public Collection<Film> getPopular(int count) {
-        List<Film> filmList = new ArrayList<>(storage.values()
+        ArrayList<Film> films = new ArrayList<>(storage.values()
                 .stream()
                 .sorted((o1, o2) -> Integer.compare(o2.getLikes().size(), o1.getLikes().size()))
-                .limit(count).collect(Collectors.toList()));
-        return filmList;
+                .limit(count).toList());
+        return films;
     }
 
     @Override
