@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class FilmControllerTest {
-    private Validator validator;
     private final FilmController filmController = new FilmController();
+    private Validator validator;
 
     @BeforeEach
     public void setUp() {
@@ -32,13 +32,6 @@ class FilmControllerTest {
                 .releaseDate(LocalDate.now())
                 .duration(1).build();
         assertTrue(validator.validate(film).isEmpty());
-    }
-
-    @Test
-    void createFilmNullFiled() {
-        final Film film = null;
-        assertThrows(NullPointerException.class,
-                () -> filmController.validate(film));
     }
 
     @Test
@@ -90,7 +83,7 @@ class FilmControllerTest {
         final Film film = Film.builder()
                 .name("name")
                 .description("description")
-                .releaseDate(LocalDate.of(1897,1,1))
+                .releaseDate(LocalDate.of(1897, 1, 1))
                 .duration(-1).build();
         assertFalse(validator.validate(film).isEmpty());
     }

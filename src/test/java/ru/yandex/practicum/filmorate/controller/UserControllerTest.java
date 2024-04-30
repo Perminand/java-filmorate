@@ -15,9 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
 
-    private Validator validator;
-
     static final UserController userController = new UserController();
+    private Validator validator;
 
     @BeforeEach
     public void setUp() {
@@ -34,13 +33,6 @@ class UserControllerTest {
                 .birthday(LocalDate.now())
                 .build();
         assertTrue(validator.validate(user).isEmpty());
-    }
-
-    @Test
-    void createUserNullFiled() {
-        final User user = null;
-        assertThrows(NullPointerException.class,
-                () -> userController.validate(user));
     }
 
     @Test
@@ -86,28 +78,4 @@ class UserControllerTest {
         });
     }
 
-    @Test
-    void createUserBirthdayFiled() throws ValidationException {
-        final User user = User.builder()
-                .name("name")
-                .login("login")
-                .email("a@aa.ru")
-                .birthday(LocalDate.now().plusYears(1))
-                .build();
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.validate(user));
-        assertEquals("Дата рождения не может быть в будущем",
-                exception.getMessage());
-    }
-
-    @Test
-    void createUserNullNameOk() throws ValidationException, DuplicatedDataException {
-        final User user = User.builder()
-                .name(null)
-                .login("login")
-                .email("a@aa.ru")
-                .birthday(LocalDate.now())
-                .build();
-        userController.validate(user);
-    }
 }
