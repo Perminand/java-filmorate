@@ -1,0 +1,8 @@
+logging:
+  level:
+    org:
+      zalando:
+        logbook: TRACE
+filmorate:
+  #date-mark - формат yyyy-MM-dd
+  date-mark: "1895-12-28"
