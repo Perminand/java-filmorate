@@ -51,6 +51,7 @@ public class FilmService implements IntService<Film> {
         if (data.getId() == null) {
             throw new ValidationException("ID не должен содержать NULL");
         }
+        filmStorage.findId(data.getId());
         validate(data);
         log.debug("Film обновлен" + data);
         return filmStorage.update(data);
