@@ -2,13 +2,11 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NullFoundIdException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -16,9 +14,11 @@ import java.util.Optional;
 @Service
 public class UserService implements IntService<User> {
     private final UserStorage userStorage;
+    private final ValidateUser validateUser;
 
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, ValidateUser validateUser) {
         this.userStorage = userStorage;
+        this.validateUser = validateUser;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class UserService implements IntService<User> {
 
     @Override
     public Optional<User> findById(long id) {
-        return Optional.empty();
+        return userStorage.getById(id);
     }
 
     public Collection<User> getFriends(long id) {
@@ -41,7 +41,7 @@ public class UserService implements IntService<User> {
 
     @Override
     public Optional<User> create(User data) {
-        validate(data);
+        validateUser.validateAll(data);
         if (data.getName() == null || data.getName().isBlank()) {
             data.setName(data.getLogin());
         }
@@ -56,24 +56,10 @@ public class UserService implements IntService<User> {
         }
         final Optional<User> userOptional = userStorage.getById(data.getId());
         userOptional.orElseThrow(() -> new NullFoundIdException("Нет user c ID:" + data.getId()));
-        validate(data);
+        validateUser.validateBirthday(data);
         log.debug("User c ID " + data.getId() + " обновлен");
         return userStorage.update(data);
     }
-
-    public void validate(final User newUser) {
-        if (userStorage.findEmail(newUser)) {
-            final String s = "Этот имейл уже используется";
-            log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
-            throw new DuplicatedDataException(s);
-        }
-        if (newUser.getBirthday().isAfter(LocalDate.now())) {
-            final String s = "Дата рождения не может быть в будущем";
-            log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getBirthday());
-            throw new ValidationException(s);
-        }
-    }
-
 
     public Optional<User> addFriend(long userId, long friendId) {
         return userStorage.addFriend(userId, friendId);
