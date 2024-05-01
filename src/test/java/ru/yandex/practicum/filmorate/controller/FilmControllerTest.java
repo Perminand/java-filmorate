@@ -5,17 +5,20 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.exception.NullFoundIdException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.memory.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 class FilmControllerTest {
-    private final FilmController filmController = new FilmController();
+    private final FilmService filmService = new FilmService(LocalDate.of(1895, 12, 28), new InMemoryFilmStorage());
+
+    private final FilmController filmController = new FilmController(filmService);
     private Validator validator;
 
     @BeforeEach
@@ -32,6 +35,13 @@ class FilmControllerTest {
                 .releaseDate(LocalDate.now())
                 .duration(1).build();
         assertTrue(validator.validate(film).isEmpty());
+    }
+
+    @Test
+    void createFilmNullFiled() {
+        final Film film = null;
+        assertThrows(NullPointerException.class,
+                () -> filmController.create(film));
     }
 
     @Test
@@ -113,7 +123,7 @@ class FilmControllerTest {
                 .description("description")
                 .releaseDate(LocalDate.of(1897, 1, 1))
                 .duration(1).build();
-        ValidationException exception = assertThrows(ValidationException.class, () ->
+        NullFoundIdException exception = assertThrows(NullFoundIdException.class, () ->
                 filmController.update(film));
         assertEquals("Нет запрошенного ИД", exception.getMessage());
 

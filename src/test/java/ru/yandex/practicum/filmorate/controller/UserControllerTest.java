@@ -8,6 +8,10 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.ValidateUser;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.memory.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
@@ -16,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserControllerTest {
 
     static final UserController userController = new UserController();
+
+    UserStorage userStorage = new InMemoryUserStorage();
+    UserService userService = new UserService(userStorage, new ValidateUser(userStorage));
     private Validator validator;
 
     @BeforeEach
@@ -73,8 +80,8 @@ class UserControllerTest {
                 .birthday(LocalDate.now())
                 .build();
         assertThrows(DuplicatedDataException.class, () -> {
-            userController.create(user1);
-            userController.create(user2);
+            userService.create(user1);
+            userService.create(user2);
         });
     }
 
