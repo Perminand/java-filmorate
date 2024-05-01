@@ -14,5 +14,7 @@ public interface Storage<T> {
 
     void deleteById(long id);
 
+    void findId(long key);
+
 
 }
