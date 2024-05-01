@@ -15,7 +15,9 @@ import java.util.stream.Collectors;
 public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorage {
     UserStorage userStorage;
 
-    public InMemoryFilmStorage(){}
+    public InMemoryFilmStorage() {
+
+    }
 
     @Autowired
     public InMemoryFilmStorage(UserStorage userStorage) {
@@ -52,13 +54,13 @@ public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorag
                 .sorted(new Comparator<Film>() {
                     @Override
                     public int compare(Film o1, Film o2) {
-                        if(o2.getLikes()==null){
-                            if(o1.getLikes()==null){
+                        if (o2.getLikes() == null) {
+                            if(o1.getLikes()==null) {
                                 return 0;
                             }
                             return -1;
                         }
-                        if(o1.getLikes()==null){
+                        if (o1.getLikes()==null) {
                             return 1;
                         }
                         return o2.getLikes().size()-o1.getLikes().size();
