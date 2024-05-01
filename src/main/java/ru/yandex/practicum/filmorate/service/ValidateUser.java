@@ -21,7 +21,8 @@ public class ValidateUser {
         validateEmail(newUser);
         validateBirthday(newUser);
     }
-    public void validateEmail(final User newUser){
+
+    public void validateEmail(final User newUser) {
         if (userStorage.findEmail(newUser)) {
             final String s = "Этот имейл уже используется";
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getEmail());
@@ -29,7 +30,7 @@ public class ValidateUser {
         }
     }
 
-    public void validateBirthday(final User newUser){
+    public void validateBirthday(final User newUser) {
         if (newUser.getBirthday().isAfter(LocalDate.now())) {
             final String s = "Дата рождения не может быть в будущем";
             log.info("Вызвано исключение: " + s + " Пришло: " + newUser.getBirthday());
