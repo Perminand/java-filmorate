@@ -22,8 +22,6 @@ public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorag
         this.userStorage = userStorage;
     }
 
-
-
     @Override
     public Optional<Film> create(Film data) {
         final long key = ++generateId;
