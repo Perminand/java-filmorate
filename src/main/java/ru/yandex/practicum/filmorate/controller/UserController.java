@@ -13,7 +13,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/users")
 @Slf4j
-public class UserController implements Controller<User> {
+public class UserController {
 
     private UserService userService;
 
@@ -26,19 +26,16 @@ public class UserController implements Controller<User> {
     }
 
 
-    @Override
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Collection<User> getAll() {
         return userService.findAll();
     }
 
-    @Override
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public User getById(@PathVariable("userId") long id) {
-        return userService.findById(id)
-                .orElseThrow(() -> new NullPointerException("Нет user с заданным ID"));
+        return userService.getById(id);
     }
 
     @GetMapping("/{userId}/friends")
@@ -54,14 +51,12 @@ public class UserController implements Controller<User> {
         return userService.getCommonFriends(userId, otherId);
     }
 
-    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User create(@Valid @RequestBody final User user) {
         return userService.create(user).get();
     }
 
-    @Override
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public User update(@Valid @RequestBody final User user) {
@@ -79,7 +74,7 @@ public class UserController implements Controller<User> {
     @ResponseStatus(HttpStatus.OK)
     public User deleteFriends(@PathVariable("userId") long userId,
                               @PathVariable("friendId") long friendId) {
-        return userService.deleteFriend(userId, friendId).orElseThrow(() -> new NullPointerException());
+        return userService.deleteFriend(userId, friendId);
     }
 
 

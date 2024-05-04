@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,37 +15,23 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/films")
 @Slf4j
-public class FilmController implements Controller<Film> {
-    private FilmService filmService;
+@RequiredArgsConstructor
+public class FilmController {
+    private final FilmService filmService;
 
-    public FilmController() {
-    }
-
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
-    @Override
     @GetMapping("/{filmId}")
     @ResponseStatus(HttpStatus.OK)
     public Film getById(@PathVariable("filmId") long id) {
-        return filmService.findById(id)
-                .orElseThrow(() -> new NullPointerException("Нет film с заданным ID"));
-
+        return filmService.getById(id);
     }
 
     @GetMapping("/popular")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<Film> getPopular(@RequestParam(required = false) Integer count) {
-        if (count == null) {
-            count = 10;
-        }
+    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") Integer count) {
         return filmService.getPopular(count);
     }
 
 
-    @Override
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Collection<Film> getAll() {
@@ -52,14 +39,12 @@ public class FilmController implements Controller<Film> {
     }
 
 
-    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Film create(@Valid @RequestBody Film data) {
         return filmService.create(data).get();
     }
 
-    @Override
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public Film update(@Valid @RequestBody Film film) {
@@ -70,7 +55,7 @@ public class FilmController implements Controller<Film> {
     @ResponseStatus(HttpStatus.OK)
     public Film addLike(@PathVariable("filmId") long filmId,
                         @PathVariable("userId") long userId) {
-        return filmService.addLike(filmId, userId).get();
+        return filmService.addLike(filmId, userId);
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
