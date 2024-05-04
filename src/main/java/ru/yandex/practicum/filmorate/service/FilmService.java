@@ -14,39 +14,40 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class FilmService implements IntService<Film> {
+public class FilmService {
+    @Value("${filmorate.date-mark}")
     private final LocalDate dateMark;
     private final FilmStorage filmStorage;
+    private final UserService userService;
+
 
     @Autowired
-    public FilmService(@Value("${filmorate.date-mark}") LocalDate dateMark,
-                       FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
+    public FilmService(LocalDate dateMark, FilmStorage filmStorage, UserService userService) {
         this.dateMark = dateMark;
+        this.filmStorage = filmStorage;
+
+        this.userService = userService;
     }
 
-    @Override
     public Collection<Film> findAll() {
         return filmStorage.getAll();
     }
 
-    @Override
-    public Optional<Film> findById(long id) {
-        return filmStorage.getById(id);
+    public Film getById(long id) {
+        return filmStorage.getById(id).orElseThrow(() -> new NullPointerException("Нет film с заданным ID"));
+
     }
 
     public Collection<Film> getPopular(int count) {
         return filmStorage.getPopular(count);
     }
 
-    @Override
     public Optional<Film> create(Film data) {
         validate(data);
         log.debug("Film создан" + data);
         return filmStorage.create(data);
     }
 
-    @Override
     public Optional<Film> update(Film data) {
         if (data.getId() == null) {
             throw new ValidationException("ID не должен содержать NULL");
@@ -57,8 +58,17 @@ public class FilmService implements IntService<Film> {
         return filmStorage.update(data);
     }
 
-    public Optional<Film> addLike(long filmId, long userId) {
-        return filmStorage.addLike(filmId, userId);
+    public Film addLike(long filmId, long userId) {
+        Film film = getById(filmId);
+        userService.getById(userId);
+        filmStorage.addLike(filmId, userId);
+        return film;
+    }
+
+    public Optional<Film> deleteLike(long filmId, long userId) {
+        getById(filmId);
+        userService.getById(userId);
+        return filmStorage.deleteLike(filmId, userId);
     }
 
     private void validate(final Film film) throws ValidationException {
@@ -69,9 +79,7 @@ public class FilmService implements IntService<Film> {
         }
     }
 
-    public Optional<Film> deleteLike(long filmId, long userId) {
-        return filmStorage.deleteLike(filmId, userId);
-    }
+
 
 
 }
