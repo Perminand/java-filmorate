@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.service.ValidateUser;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.storage.memory.InMemoryUserStorage;
 
@@ -22,7 +21,7 @@ class UserControllerTest {
     static final UserController userController = new UserController();
 
     UserStorage userStorage = new InMemoryUserStorage();
-    UserService userService = new UserService(userStorage, new ValidateUser(userStorage));
+    UserService userService = new UserService(userStorage);
     private Validator validator;
 
     @BeforeEach

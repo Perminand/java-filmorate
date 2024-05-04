@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserServiceTest {
     private final UserStorage userStorage = new InMemoryUserStorage();
-    private final UserService userService = new UserService(userStorage, new ValidateUser(userStorage));
+    private final UserService userService = new UserService(userStorage);
     private Validator validator;
 
     @BeforeEach
@@ -75,7 +75,7 @@ class UserServiceTest {
                 .birthday(LocalDate.now())
                 .build();
         userService.update(user);
-        assertEquals(userService.findById(i).get().getName(), "newName");
+        assertEquals(userService.getById(i).getName(), "newName");
 
 
     }
@@ -92,7 +92,7 @@ class UserServiceTest {
             userService.addFriend(1, i);
             i++;
         } while (i != 10);
-        assertEquals(userService.findById(1).get().getFriends().size(),8);
+        assertEquals(userService.getById(1).getFriends().size(),8);
     }
 
     @Test
