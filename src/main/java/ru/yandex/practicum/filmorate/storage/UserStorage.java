@@ -15,7 +15,7 @@ public interface UserStorage extends Storage<User> {
 
     Optional<User> addFriend(long userId, long friendId);
 
-    Optional<User> deleteFriend(long userId, long friendId);
+    User deleteFriend(long userId, long friendId);
 
 
 }
