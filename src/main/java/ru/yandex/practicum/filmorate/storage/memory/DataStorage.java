@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.memory;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exception.NullFoundIdException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,11 +22,11 @@ public class DataStorage<T> {
         return Optional.ofNullable(storage.get(id));
     }
 
-    public void findId(long key) throws NullFoundIdException {
+    public void findId(long key) throws EntityNotFoundException {
         if (!storage.containsKey(key)) {
             final String s = "Нет запрошенного ИД";
             log.info("Вызвано исключение: " + s + " Получено: " + key);
-            throw new NullFoundIdException(s);
+            throw new EntityNotFoundException(s);
         }
     }
 }
