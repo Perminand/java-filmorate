@@ -25,7 +25,7 @@ public class UserService {
 
     public User getById(long id) {
 
-        return userStorage.getById(id).orElseThrow(() -> new NullPointerException("Нет user с заданным ID"));
+        return userStorage.getById(id).orElseThrow(() -> new EntityNotFoundException("Нет user с заданным ID"));
 
     }
 
@@ -64,17 +64,10 @@ public class UserService {
     }
 
     public User deleteFriend(long userId, long friendId) {
-        final User user = userStorage.getById(userId).get();
-        final User friendUser = userStorage.getById(userId).get();
-        if (user == null) {
-            throw new EntityNotFoundException("Нет user с ID: " + userId);
-        } else if (friendUser == null) {
-            throw new EntityNotFoundException("Нет friends с ID: " + friendId);
-        } else {
-            userStorage.deleteFriend(userId, friendId);
-        }
-
-
+        userStorage.getById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет user с ID: " + userId));
+        userStorage.getById(friendId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет friends с ID: " + friendId));
         return userStorage.deleteFriend(userId, friendId);
     }
 
