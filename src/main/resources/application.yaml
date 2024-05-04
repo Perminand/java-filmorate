@@ -1,11 +1,8 @@
-spring:
-  main:
-    banner-mode: off
-
-server:
-  port: 8080
-
 logging:
-  org:
-    zalando:
-      logbook: TRACE
+  level:
+    org:
+      zalando:
+        logbook: TRACE
+
+filmorate:
+  date-mark: "1895-12-28"
