@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -30,7 +31,7 @@ public class FilmService {
     }
 
     public Film getById(long id) {
-        return filmStorage.getById(id).orElseThrow(() -> new NullPointerException("Нет film с заданным ID"));
+        return filmStorage.getById(id).orElseThrow(() -> new EntityNotFoundException("Нет film с заданным ID"));
 
     }
 
