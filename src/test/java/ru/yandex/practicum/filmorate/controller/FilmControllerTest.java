@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
     private final FilmService filmService = new FilmService(LocalDate.of(1895, 12, 28),
-    new InMemoryFilmStorage(),new UserService(new InMemoryUserStorage()));
+            new InMemoryFilmStorage(), new UserService(new InMemoryUserStorage()));
 
     private final FilmController filmController = new FilmController(filmService);
     private Validator validator;

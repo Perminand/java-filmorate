@@ -33,7 +33,7 @@ class FilmServiceTest {
                 .releaseDate(LocalDate.now())
                 .duration(1).build();
         assertTrue(validator.validate(film).isEmpty());
-        assertEquals(filmService.create(film).get(),film);
+        assertEquals(filmService.create(film).get(), film);
     }
 
     @Test

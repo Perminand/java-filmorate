@@ -92,21 +92,21 @@ class UserServiceTest {
             userService.addFriend(1, i);
             i++;
         } while (i != 10);
-        assertEquals(userService.getById(1).getFriends().size(),8);
+        assertEquals(userService.getById(1).getFriends().size(), 8);
     }
 
     @Test
     void getCommonFriends() {
-            userService.addFriend(1, 2);
-            userService.addFriend(2, 3);
-    assertEquals(userService.getCommonFriends(1,3).size(),1);
+        userService.addFriend(1, 2);
+        userService.addFriend(2, 3);
+        assertEquals(userService.getCommonFriends(1, 3).size(), 1);
 
     }
 
     @Test
     void deleteFriend() {
         userService.addFriend(1, 2);
-        userService.deleteFriend(1,2);
-        assertEquals(userService.getFriends(1).size(),0);
+        userService.deleteFriend(1, 2);
+        assertEquals(userService.getFriends(1).size(), 0);
     }
 }
