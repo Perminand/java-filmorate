@@ -97,7 +97,7 @@ public class InMemoryUserStorage extends DataStorage<User> implements UserStorag
         if (setUser != null) {
             setUser.remove(friendId);
         }
-        final Set<Long> setFriends = storage.get(userId).getFriends();
+        final Set<Long> setFriends = storage.get(friendId).getFriends();
         if (setFriends != null) {
             setFriends.remove(userId);
         }
