@@ -70,7 +70,7 @@ public class UserService {
             throw new EntityNotFoundException("Нет user с ID: " + userId);
         } else if (friendUser == null) {
             throw new EntityNotFoundException("Нет friends с ID: " + friendId);
-        }else {
+        } else {
             userStorage.deleteFriend(userId, friendId);
         }
 
