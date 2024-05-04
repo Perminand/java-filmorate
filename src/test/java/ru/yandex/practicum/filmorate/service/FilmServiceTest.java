@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmServiceTest {
-    private final FilmService filmService = new FilmService(LocalDate.of(1895, 12, 28), new InMemoryFilmStorage(), new UserService(new InMemoryUserStorage()));
+    private final FilmService filmService = new FilmService(new InMemoryFilmStorage(), new UserService(new InMemoryUserStorage()));
     private Validator validator;
 
     @BeforeEach
