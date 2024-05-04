@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class FilmService {
-    private final static LocalDate DATE_MARK = LocalDate.of(1895, 12, 28);
+    private static final LocalDate DATE_MARK = LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
     private final UserService userService;
 
