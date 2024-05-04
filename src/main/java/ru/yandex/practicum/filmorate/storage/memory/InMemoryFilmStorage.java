@@ -13,16 +13,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorage {
-    UserStorage userStorage;
-
-    public InMemoryFilmStorage() {
-
-    }
-
-    @Autowired
-    public InMemoryFilmStorage(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
 
     @Override
     public Optional<Film> create(Film data) {
@@ -72,10 +62,8 @@ public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorag
 
     @Override
     public Optional<Film> addLike(long filmId, long userId) {
-        findId(filmId);
-        userStorage.findId(userId);
         final Film film = storage.get(filmId);
-        Set<Long> likes = film.getLikes();
+        Set<Long> likes = storage.get(filmId).getLikes();
         if (likes == null) {
             likes = new HashSet<>();
         }
@@ -86,8 +74,6 @@ public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorag
 
     @Override
     public Optional<Film> deleteLike(long filmId, long userId) {
-        findId(filmId);
-        userStorage.findId(userId);
         storage.get(filmId).getLikes().remove(userId);
         return Optional.ofNullable(storage.get(filmId));
     }
