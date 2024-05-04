@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -15,17 +14,14 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class FilmService {
-    @Value("${filmorate.date-mark}")
-    private final LocalDate dateMark;
+    private final static LocalDate DATE_MARK = LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
     private final UserService userService;
 
 
     @Autowired
-    public FilmService(LocalDate dateMark, FilmStorage filmStorage, UserService userService) {
-        this.dateMark = dateMark;
+    public FilmService(FilmStorage filmStorage, UserService userService) {
         this.filmStorage = filmStorage;
-
         this.userService = userService;
     }
 
@@ -72,7 +68,7 @@ public class FilmService {
     }
 
     private void validate(final Film film) throws ValidationException {
-        if (film.getReleaseDate().isBefore(dateMark)) {
+        if (film.getReleaseDate().isBefore(DATE_MARK)) {
             final String s = "Дата релиза — не раньше 28 декабря 1895 года";
             log.info("Вызвано исключение: " + s + " Получено: " + film.getReleaseDate());
             throw new ValidationException(s);
