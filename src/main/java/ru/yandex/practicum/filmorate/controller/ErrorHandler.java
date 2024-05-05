@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.adapter.ErrorResponse;
+import ru.yandex.practicum.filmorate.dto.ErrorResponse;
 
 @RestControllerAdvice("ru.yandex.practicum.filmorate")
 public class ErrorHandler {
