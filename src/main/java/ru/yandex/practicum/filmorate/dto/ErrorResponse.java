@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.adapter;
+package ru.yandex.practicum.filmorate.dto;
 
 import lombok.Getter;
 
