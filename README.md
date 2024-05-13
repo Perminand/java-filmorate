@@ -55,6 +55,7 @@ erDiagram
     
     
 ```
+The diagram shows the relationships between the SQL tables in the application
 ### Command SQL FILMS
 #### findAll: 
 ```sql
