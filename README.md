@@ -11,17 +11,17 @@ erDiagram
         date release_date
         int duration
         bigint film_category_id FK
-        bigint film_rating_MPA FK
+        bigint film_rating FK
         bigint users_like_id FK
         
     }
 
-    FILM_CATEGORY{
+    FILM_CATEGORY {
         bigint category_id PK
         text name
     }
     
-    FILM_RATING_MPA{
+    FILM_RATING {
         bigint film_rating_id PK
         varchar(10) name
         varchar(255) description
@@ -45,7 +45,7 @@ erDiagram
    
 
     FILM_CATEGORY }|--|| FILMS: film_category_id_to_film_id
-    FILM_RATING_MPA ||--|| FILMS : film_rating_id_to_film_id
+    FILM_RATING ||--|| FILMS : film_rating_id_to_film_id
     FILMS ||--|{ LIKES : film_id_to_film_id
     LIKES }|--|| USERS : film_id_to_user_id
     USERS ||--|{ FRIENDSHIP: film_id_to_user_first_id
