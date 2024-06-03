@@ -1,12 +1,12 @@
-package ru.yandex.practicum.filmorate.storage.memory;
+package ru.yandex.practicum.filmorate.dal.memory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dal.UserStorage;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 
@@ -14,6 +14,11 @@ import java.util.*;
 @Slf4j
 @Component
 public class InMemoryUserStorage extends DataStorage<User> implements UserStorage {
+
+    @Override
+    public Optional<User> getById(long id) {
+        return Optional.ofNullable(storage.get(id));
+    }
 
     @Override
     public Optional<User> create(User data) {
@@ -31,13 +36,9 @@ public class InMemoryUserStorage extends DataStorage<User> implements UserStorag
         return Optional.ofNullable(storage.get(key));
     }
 
-    @Override
-    public void deleteById(long id) {
-
-    }
 
     @Override
-    public Collection<User> getFriends(long id) {
+    public List<User> getFriends(long id) {
         final User user = storage.get(id);
         if (user == null) {
             throw new EntityNotFoundException("Нет user с ID: " + id);
@@ -47,14 +48,14 @@ public class InMemoryUserStorage extends DataStorage<User> implements UserStorag
             return new ArrayList<>();
         }
         List<User> userList = new ArrayList<>();
-        for (Long s : setUser) {
+        for (long s : setUser) {
             userList.add(storage.get(s));
         }
         return userList;
     }
 
     @Override
-    public Collection<User> getCommonFriends(long userId, long otherId) {
+    public List<User> getCommonFriends(long userId, long otherId) {
         final List<User> listUser = new ArrayList<>();
         storage.get(userId)
                 .getFriends()
@@ -104,5 +105,14 @@ public class InMemoryUserStorage extends DataStorage<User> implements UserStorag
         return storage.get(userId);
     }
 
+    @Override
+    public void delete() {
+        storage.clear();
+    }
+
+    @Override
+    public void deleteById(long id) {
+        storage.remove(id);
+    }
 
 }

@@ -1,0 +1,39 @@
+package ru.yandex.practicum.filmorate.dal.db.storage;
+
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import ru.yandex.practicum.filmorate.dal.FilmStorage;
+import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
+import ru.yandex.practicum.filmorate.dal.mappers.UserRowMapper;
+import ru.yandex.practicum.filmorate.model.Film;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+
+@JdbcTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@ContextConfiguration(classes = {FilmStorage.class, FilmRowMapper.class})
+class FilmDbStorageTest {
+    private final FilmStorage filmStorage;
+
+    @Test
+    @Sql(scripts = {"/dataTest.sql"})
+    void getById() {
+
+        Optional<Film> optional = filmStorage.getById(1);
+
+        assertThat(optional)
+                .isPresent()
+                .hasValueSatisfying(film ->
+                        assertThat(film).hasFieldOrPropertyWithValue("id", 1L)
+                );
+    }
+    }

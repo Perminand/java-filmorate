@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.dal.db.storage.service;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -8,15 +8,17 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.memory.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.memory.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.dal.memory.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.dal.memory.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmServiceTest {
-    private final FilmService filmService = new FilmService(new InMemoryFilmStorage(), new UserService(new InMemoryUserStorage()));
+    private final FilmService filmService = new FilmService(new InMemoryFilmStorage(), new UserService(new InMemoryUserStorage(),null),null,null,null,null);
     private Validator validator;
 
     @BeforeEach
@@ -33,7 +35,7 @@ class FilmServiceTest {
                 .releaseDate(LocalDate.now())
                 .duration(1).build();
         assertTrue(validator.validate(film).isEmpty());
-        assertEquals(filmService.create(film).get(), film);
+        assertEquals(filmService.create(film), film);
     }
 
     @Test
@@ -109,7 +111,7 @@ class FilmServiceTest {
         newFilm.setName("newName");
         newFilm.setId(Long.valueOf("1"));
         filmService.update(newFilm);
-        assertTrue(filmService.findAll().stream()
+        assertTrue(filmService.getAll().stream()
                 .map(Film::getName)
                 .anyMatch(item -> item.equals("newName")));
     }

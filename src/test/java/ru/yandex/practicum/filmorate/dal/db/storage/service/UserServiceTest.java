@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.dal.db.storage.service;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -7,8 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.storage.memory.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.dal.UserStorage;
+import ru.yandex.practicum.filmorate.dal.memory.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserServiceTest {
     private final UserStorage userStorage = new InMemoryUserStorage();
-    private final UserService userService = new UserService(userStorage);
+    private final UserService userService = new UserService(userStorage,null);
     private Validator validator;
 
     @BeforeEach
@@ -39,7 +40,7 @@ class UserServiceTest {
 
     @Test
     void create() {
-        int i = userService.findAll().size();
+        int i = userService.getAll().size();
         User user = User.builder()
                 .name("name10")
                 .login("login10")
@@ -47,19 +48,19 @@ class UserServiceTest {
                 .birthday(LocalDate.now())
                 .build();
         userService.create(user);
-        assertEquals(userService.findAll().size(), i + 1);
+        assertEquals(userService.getAll().size(), i + 1);
     }
 
     @Test
     void createDoubleEmail() {
-        int i = userService.findAll().size();
+        int i = userService.getAll().size();
         User user = User.builder()
                 .name("name10")
                 .login("login10")
                 .email("a@aa10.ru")
                 .birthday(LocalDate.now())
                 .build();
-        assertEquals(userService.create(user).get(), user);
+        assertEquals(userService.create(user), user);
         DuplicatedDataException exception = assertThrows(DuplicatedDataException.class, () ->
                 userService.create(user));
     }
@@ -82,7 +83,7 @@ class UserServiceTest {
 
     @Test
     void findAll() {
-        assertEquals(userService.findAll().size(), 9);
+        assertEquals(userService.getAll().size(), 9);
     }
 
     @Test

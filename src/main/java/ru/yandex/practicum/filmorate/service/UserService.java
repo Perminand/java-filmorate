@@ -3,64 +3,81 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.UserStorage;
+import ru.yandex.practicum.filmorate.dal.db.storage.builders.BuilderUser;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements IntefaceService<User> {
     private final UserStorage userStorage;
+    private final BuilderUser builderUser;
 
-    public Collection<User> findAll() {
+    public List<User> getAll() {
         return userStorage.getAll();
     }
 
     public User getById(long id) {
-
-        return userStorage.getById(id).orElseThrow(() -> new EntityNotFoundException("Нет user с заданным ID"));
-
+        User user = userStorage.getById(id).orElseThrow(() -> new EntityNotFoundException("Нет user с заданным ID"));
+        return builderUser.build(user);
     }
 
-    public Collection<User> getFriends(long id) {
+    public List<User> getFriends(long id) {
+        getById(id);
         return userStorage.getFriends(id);
     }
 
-    public Collection<User> getCommonFriends(long userId, long otherId) {
+    public List<User> getCommonFriends(long userId, long otherId) {
         return userStorage.getCommonFriends(userId, otherId);
     }
 
-    public Optional<User> create(User data) {
+    public User create(User data) {
         validateAll(data);
         if (data.getName() == null || data.getName().isBlank()) {
             data.setName(data.getLogin());
         }
         log.debug("User создан: " + data);
-        return userStorage.create(data);
+        User user = userStorage.create(data).get();
+        return user;
     }
 
-    public Optional<User> update(User data) {
-        if (data.getId() == null) {
-            throw new ValidationException("ID должен быть указан");
+    public User update(User data) {
+        Long id = data.getId();
+        if (id == null) {
+            throw new ValidationException("id должен быть указан");
         }
+        User user = userStorage.getById(id).get();
         final Optional<User> userOptional = userStorage.getById(data.getId());
-        userOptional.orElseThrow(() -> new EntityNotFoundException("Нет user c ID:" + data.getId()));
+        userOptional.orElseThrow(() -> new EntityNotFoundException("Нет user c id:" + data.getId()));
         validateBirthday(data);
-        log.debug("User c ID " + data.getId() + " обновлен");
-        return userStorage.update(data);
+        log.debug("User c id: " + data.getId() + " обновлен");
+        return userStorage.update(data).get();
     }
 
-    public Optional<User> addFriend(long userId, long friendId) {
-        userStorage.findId(userId);
-        userStorage.findId(friendId);
-        return userStorage.addFriend(userId, friendId);
+    @Override
+    public void delete() {
+        userStorage.delete();
+    }
+
+    @Override
+    public void deleteById(long id) {
+        userStorage.deleteById(id);
+    }
+
+    public List<User> addFriend(long userId, long friendId) {
+        userStorage.getById(userId);
+        userStorage.getById(friendId);
+        userStorage.addFriend(userId, friendId);
+        List<User> userList = userStorage.getFriends(userId);
+        return userList;
     }
 
     public User deleteFriend(long userId, long friendId) {

@@ -9,11 +9,12 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
-public class UserController {
+public class UserController implements IntefaceController<User> {
 
     private UserService userService;
 
@@ -29,51 +30,61 @@ public class UserController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Collection<User> getAll() {
-        return userService.findAll();
+        return userService.getAll();
     }
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public User getById(@PathVariable("userId") long id) {
+    public User getById(@PathVariable("userId") Long id) {
         return userService.getById(id);
     }
 
     @GetMapping("/{userId}/friends")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<User> getFriends(@PathVariable("userId") long id) {
+    public Collection<User> getFriends(@PathVariable("userId") Long id) {
         return userService.getFriends(id);
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<User> getCommonFriends(@PathVariable("userId") long userId,
-                                             @PathVariable("otherId") long otherId) {
+    public Collection<User> getCommonFriends(@PathVariable("userId") Long userId,
+                                             @PathVariable("otherId") Long otherId) {
         return userService.getCommonFriends(userId, otherId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User create(@Valid @RequestBody final User user) {
-        return userService.create(user).get();
+        return userService.create(user);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public User update(@Valid @RequestBody final User user) {
-        return userService.update(user).get();
+        return userService.update(user);
+    }
+
+    @Override
+    public void delete() {
+        userService.delete();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        userService.deleteById(id);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
-    public User addFriends(@PathVariable("userId") long userId,
-                           @PathVariable("friendId") long friendId) {
-        return userService.addFriend(userId, friendId).get();
+    public List<User> addFriends(@PathVariable("userId") Long userId,
+                                 @PathVariable("friendId") Long friendId) {
+        return userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
-    public User deleteFriends(@PathVariable("userId") long userId,
-                              @PathVariable("friendId") long friendId) {
+    public User deleteFriends(@PathVariable("userId") Long userId,
+                              @PathVariable("friendId") Long friendId) {
         return userService.deleteFriend(userId, friendId);
     }
 
