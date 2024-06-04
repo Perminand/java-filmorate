@@ -29,6 +29,7 @@ class FilmoRateUserStorageTests {
 
         Optional<User> userOptional = userStorage.getById(1);
 
+
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->

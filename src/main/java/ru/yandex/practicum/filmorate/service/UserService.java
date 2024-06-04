@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService implements IntefaceService<User> {
     private final UserStorage userStorage;
-    private final BuilderUser builderUser;
+    private final BuilderUser builderUser = new BuilderUser();
 
     public List<User> getAll() {
         return userStorage.getAll();
@@ -46,7 +46,7 @@ public class UserService implements IntefaceService<User> {
         }
         log.debug("User создан: " + data);
         User user = userStorage.create(data).get();
-        return user;
+        return getById(user.getId());
     }
 
     public User update(User data) {

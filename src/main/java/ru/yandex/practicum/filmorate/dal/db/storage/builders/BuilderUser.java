@@ -15,18 +15,18 @@ import java.util.Set;
 
 
 @Component
-@AllArgsConstructor
 public class BuilderUser {
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate = new JdbcTemplate();
 
 
 
     public Set<Long> getUserFriends(long id) {
         String query = "SELECT * FROM FRIENDSHIP WHERE user_first_id = ?";
         Set<Long> set  = new HashSet<>();
-        for (Friend f : jdbcTemplate.query(query, BuilderUser::makeFriend, id)) {
-            set.add(f.getSecondId());
-        }
+         List<Friend> friendList = jdbcTemplate.query(query, BuilderUser::makeFriend, id);
+//        for (Friend f : )) {
+//            set.add(f.getSecondId());
+//        }
         return set;
     }
 

@@ -100,12 +100,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public boolean findEmail(User newUser) {
-        try {
-            jdbcTemplate.queryForObject("Select * from users WHERE email = ?", Integer.class, newUser.getEmail());
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
+            List<User> userList = jdbcTemplate.query("Select * from users WHERE email = ?", mapper, newUser.getEmail());
+        return !userList.isEmpty();
     }
 
     @Override

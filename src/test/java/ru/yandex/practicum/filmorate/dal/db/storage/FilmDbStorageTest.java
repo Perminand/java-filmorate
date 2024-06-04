@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @JdbcTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@ContextConfiguration(classes = {FilmStorage.class, FilmRowMapper.class})
+@ContextConfiguration(classes = {FilmDbStorage.class, FilmRowMapper.class})
 class FilmDbStorageTest {
-    private final FilmStorage filmStorage;
+    private final FilmDbStorage filmStorage;
 
     @Test
     @Sql(scripts = {"/dataTest.sql"})
-    void getById() {
+    public void getById() {
 
         Optional<Film> optional = filmStorage.getById(1);
 
