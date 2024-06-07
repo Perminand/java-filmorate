@@ -87,11 +87,12 @@ public class UserService implements IntefaceService<User> {
     }
 
     public User deleteFriend(long userId, long friendId) {
-        userStorage.getById(userId)
+        User user = userStorage.getById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с ID: " + userId));
         userStorage.getById(friendId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет friends с ID: " + friendId));
-        return builderUser.build(userStorage.deleteFriend(userId, friendId));
+        userStorage.deleteFriend(userId, friendId);
+        return builderUser.build(user);
     }
 
     public void validateAll(final User newUser) {

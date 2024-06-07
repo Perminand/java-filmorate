@@ -21,9 +21,10 @@ public class BuilderUser {
 
 
     public Set<Long> getUserFriends(long id) {
-        String query = "SELECT USER_SECOND_ID FROM friendship WHERE USER_FIRST_ID = ?";
+        String query = "SELECT * FROM friendship WHERE user_first_id=?";
         Set<Long> set  = new HashSet<>();
-        for (Friend f : jdbcTemplate.query(query, BuilderUser::makeFriend, id)) {
+        List<Friend> friends = jdbcTemplate.query(query, BuilderUser::makeFriend, id);
+        for (Friend f : friends) {
             set.add(f.getFirstId());
         }
         return set;
@@ -31,8 +32,8 @@ public class BuilderUser {
 
     static Friend makeFriend(ResultSet rs, int rowNum) throws SQLException {
         return new Friend(
-                rs.getLong("USER_FIRST_ID"),
-                rs.getLong("USER_SECOND_ID"));
+                rs.getLong("user_first_id"),
+                rs.getLong("user_second_id"));
     }
 
     public User build(User user) {
