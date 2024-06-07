@@ -13,13 +13,14 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements IntefaceService<User> {
     private final UserStorage userStorage;
-    private final BuilderUser builderUser = new BuilderUser();
+    private final BuilderUser builderUser;// = new BuilderUser();
 
     public List<User> getAll() {
         return userStorage.getAll();
@@ -32,11 +33,18 @@ public class UserService implements IntefaceService<User> {
 
     public List<User> getFriends(long id) {
         getById(id);
-        return userStorage.getFriends(id);
+        List<User> userList = userStorage.getFriends(id)
+                .stream()
+                .map(builderUser::build)
+                .collect(Collectors.toList());
+        return userList;
     }
 
     public List<User> getCommonFriends(long userId, long otherId) {
-        return userStorage.getCommonFriends(userId, otherId);
+        return userStorage.getCommonFriends(userId, otherId)
+                .stream()
+                .map(builderUser::build)
+                .collect(Collectors.toList());
     }
 
     public User create(User data) {
@@ -45,8 +53,8 @@ public class UserService implements IntefaceService<User> {
             data.setName(data.getLogin());
         }
         log.debug("User создан: " + data);
-        User user = userStorage.create(data).get();
-        return getById(user.getId());
+        data = userStorage.create(data).get();
+        return getById(data.getId());
     }
 
     public User update(User data) {
@@ -72,12 +80,10 @@ public class UserService implements IntefaceService<User> {
         userStorage.deleteById(id);
     }
 
-    public List<User> addFriend(long userId, long friendId) {
+    public void addFriend(long userId, long friendId) {
         userStorage.getById(userId);
         userStorage.getById(friendId);
         userStorage.addFriend(userId, friendId);
-        List<User> userList = userStorage.getFriends(userId);
-        return userList;
     }
 
     public User deleteFriend(long userId, long friendId) {
@@ -85,7 +91,7 @@ public class UserService implements IntefaceService<User> {
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с ID: " + userId));
         userStorage.getById(friendId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет friends с ID: " + friendId));
-        return userStorage.deleteFriend(userId, friendId);
+        return builderUser.build(userStorage.deleteFriend(userId, friendId));
     }
 
     public void validateAll(final User newUser) {

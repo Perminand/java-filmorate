@@ -77,7 +77,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public List<User> getFriends(long id) {
         String query = "SELECT * " +
-                "FROM USERs " +
+                "FROM users " +
                 "WHERE user_id " +
                 "IN (SELECT f.USER_SECOND_ID  " +
                 "FROM USERS u " +

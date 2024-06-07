@@ -76,9 +76,9 @@ public class UserController implements IntefaceController<User> {
 
     @PutMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> addFriends(@PathVariable("userId") Long userId,
+    public void addFriends(@PathVariable("userId") Long userId,
                                  @PathVariable("friendId") Long friendId) {
-        return userService.addFriend(userId, friendId);
+        userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")

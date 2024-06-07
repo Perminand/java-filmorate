@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Friend;
-import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
@@ -15,25 +14,25 @@ import java.util.Set;
 
 
 @Component
+@AllArgsConstructor
 public class BuilderUser {
-    private final JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    JdbcTemplate jdbcTemplate;
 
 
 
     public Set<Long> getUserFriends(long id) {
-        String query = "SELECT * FROM FRIENDSHIP WHERE user_first_id = ?";
+        String query = "SELECT USER_SECOND_ID FROM friendship WHERE USER_FIRST_ID = ?";
         Set<Long> set  = new HashSet<>();
-         List<Friend> friendList = jdbcTemplate.query(query, BuilderUser::makeFriend, id);
-//        for (Friend f : )) {
-//            set.add(f.getSecondId());
-//        }
+        for (Friend f : jdbcTemplate.query(query, BuilderUser::makeFriend, id)) {
+            set.add(f.getFirstId());
+        }
         return set;
     }
 
     static Friend makeFriend(ResultSet rs, int rowNum) throws SQLException {
         return new Friend(
-                rs.getLong("user_first_id"),
-                rs.getLong("user_second_id"));
+                rs.getLong("USER_FIRST_ID"),
+                rs.getLong("USER_SECOND_ID"));
     }
 
     public User build(User user) {
