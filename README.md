@@ -10,9 +10,10 @@ erDiagram
         varchar(255) description
         date release_date
         int duration
+        bigint film_category_id FK
         bigint film_rating FK
-        
-    }
+        bigint users_like_id FK
+     }
 
     FILM_CATEGORY {
         bigint category_id PK
@@ -55,7 +56,7 @@ erDiagram
 ```
 The diagram shows the relationships between the SQL tables in the application
 ### Command SQL FILMS
-#### findAll:
+#### findAll: 
 ```sql
 SELECT * FROM FILMS
 ```
