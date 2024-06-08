@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService implements IntefaceService<User> {
     private final UserStorage userStorage;
-    private final BuilderUser builderUser;// = new BuilderUser();
+    private final BuilderUser builderUser;
 
     public List<User> getAll() {
         return userStorage.getAll();
@@ -33,11 +33,10 @@ public class UserService implements IntefaceService<User> {
 
     public List<User> getFriends(long id) {
         getById(id);
-        List<User> userList = userStorage.getFriends(id)
+        return userStorage.getFriends(id)
                 .stream()
                 .map(builderUser::build)
                 .collect(Collectors.toList());
-        return userList;
     }
 
     public List<User> getCommonFriends(long userId, long otherId) {
@@ -58,11 +57,9 @@ public class UserService implements IntefaceService<User> {
     }
 
     public User update(User data) {
-        Long id = data.getId();
-        if (id == null) {
+        if (data.getId() == null) {
             throw new ValidationException("id должен быть указан");
         }
-        User user = userStorage.getById(id).get();
         final Optional<User> userOptional = userStorage.getById(data.getId());
         userOptional.orElseThrow(() -> new EntityNotFoundException("Нет user c id:" + data.getId()));
         validateBirthday(data);

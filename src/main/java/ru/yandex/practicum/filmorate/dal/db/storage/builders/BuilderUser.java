@@ -25,7 +25,7 @@ public class BuilderUser {
         Set<Long> set  = new HashSet<>();
         List<Friend> friends = jdbcTemplate.query(query, BuilderUser::makeFriend, id);
         for (Friend f : friends) {
-            set.add(f.getFirstId());
+            set.add(f.getSecondId());
         }
         return set;
     }

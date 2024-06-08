@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,18 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.ContextConfiguration;
-import ru.yandex.practicum.filmorate.dal.UserStorage;
 import ru.yandex.practicum.filmorate.dal.db.storage.*;
+import ru.yandex.practicum.filmorate.dal.db.storage.builders.BuilderFilm;
+import ru.yandex.practicum.filmorate.dal.db.storage.builders.BuilderUser;
 import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.dal.mappers.GenreRowMapper;
 import ru.yandex.practicum.filmorate.dal.mappers.MpaRowMapper;
 import ru.yandex.practicum.filmorate.dal.mappers.UserRowMapper;
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.dal.memory.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.dal.memory.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 
@@ -31,20 +27,21 @@ import static org.junit.jupiter.api.Assertions.*;
 @JdbcTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@ContextConfiguration(classes = {FilmDbStorage.class,
+@ContextConfiguration(classes = {FilmService.class,
+        FilmDbStorage.class,
         FilmRowMapper.class,
-        FilmService.class,
         UserService.class,
         UserDbStorage.class,
         UserRowMapper.class,
-        GenreService.class,
+        BuilderUser.class,
+        BuilderFilm.class,
         GenreService.class,
         GenreDbStorage.class,
         GenreRowMapper.class,
         ListGenreDbStorage.class,
         MpaService.class,
-        MpaDbStorage.class,
-        MpaRowMapper.class})
+        MpaRowMapper.class,
+        MpaDbStorage.class})
 class FilmServiceTest {
     private final FilmService filmService;// = new FilmService(new InMemoryFilmStorage(), new UserService(new InMemoryUserStorage()));
     private Validator validator;
