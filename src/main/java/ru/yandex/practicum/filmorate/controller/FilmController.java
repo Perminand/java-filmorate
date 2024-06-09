@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/films")
 @Slf4j
 @RequiredArgsConstructor
-public class FilmController implements IntefaceController<Film> {
+public class FilmController {
     private final FilmService filmService;
 
     @GetMapping("/{filmId}")
@@ -50,12 +50,10 @@ public class FilmController implements IntefaceController<Film> {
         return filmService.update(film);
     }
 
-    @Override
     public void delete() {
 
     }
 
-    @Override
     public void deleteById(Long id) {
 
     }

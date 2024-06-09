@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal;
+package ru.yandex.practicum.filmorate.dao;
 
 import java.util.List;
 import java.util.Optional;

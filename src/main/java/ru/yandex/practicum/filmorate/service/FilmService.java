@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.FilmStorage;
-import ru.yandex.practicum.filmorate.dal.db.storage.ListGenreDbStorage;
-import ru.yandex.practicum.filmorate.dal.db.storage.builders.BuilderFilm;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.db.storage.ListGenreDbStorage;
+import ru.yandex.practicum.filmorate.dao.db.storage.builders.BuilderFilm;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -29,7 +29,9 @@ public class FilmService implements IntefaceService<Film> {
     private final MpaService mpaService;
 
     public Collection<Film> getAll() {
-        return filmStorage.getAll();
+        return filmStorage.getAll()
+                .stream()
+                .map(builderFilm::build).toList();
     }
 
     public Film getById(long id) {

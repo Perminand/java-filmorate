@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal.db.storage;
+package ru.yandex.practicum.filmorate.dao.db.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dal.Storage;
-import ru.yandex.practicum.filmorate.dal.mappers.MpaRowMapper;
+import ru.yandex.practicum.filmorate.dao.Storage;
+import ru.yandex.practicum.filmorate.dao.mappers.MpaRowMapper;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.PreparedStatement;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class MpaDbStorage implements Storage<Mpa> {
     private final JdbcTemplate jdbcTemplate;
     private final MpaRowMapper mapper;
-    PreparedStatement stmt = null;
+    private PreparedStatement stmt = null;
 
     @Override
     public List<Mpa> getAll() {

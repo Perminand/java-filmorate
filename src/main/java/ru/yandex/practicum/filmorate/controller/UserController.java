@@ -13,7 +13,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/users")
 @Slf4j
-public class UserController implements IntefaceController<User> {
+public class UserController {
 
     private UserService userService;
 
@@ -24,7 +24,6 @@ public class UserController implements IntefaceController<User> {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -63,12 +62,10 @@ public class UserController implements IntefaceController<User> {
         return userService.update(user);
     }
 
-    @Override
     public void delete() {
         userService.delete();
     }
 
-    @Override
     public void deleteById(Long id) {
         userService.deleteById(id);
     }

@@ -1,8 +1,8 @@
-package ru.yandex.practicum.filmorate.dal.memory;
+package ru.yandex.practicum.filmorate.dao.memory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dal.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;

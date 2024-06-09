@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal.memory;
+package ru.yandex.practicum.filmorate.dao.memory;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
