@@ -15,45 +15,39 @@ import java.util.Collection;
 @RequestMapping("/genres")
 @Slf4j
 @RequiredArgsConstructor
-public class GenreController implements IntefaceController<Genre> {
+public class GenreController {
     private final GenreService genreService;
 
-    @Override
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Collection<Genre> getAll() {
         return genreService.getAll();
     }
 
-    @Override
     @GetMapping("/{genre_id}")
     @ResponseStatus(HttpStatus.OK)
     public Genre getById(@PathVariable("genre_id") final Long id) {
         return genreService.getById(id);
     }
 
-    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Genre create(@Valid @RequestBody final Genre data) {
         return genreService.create(data);
     }
 
-    @Override
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public Genre update(@Valid @RequestBody final Genre data) {
         return genreService.update(data);
     }
 
-    @Override
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void delete() {
         genreService.delete();
     }
 
-    @Override
     @DeleteMapping("/{genre_id}")
     public void deleteById(@Valid @PathVariable("genre_id") Long id) {
         genreService.deleteById(id);
