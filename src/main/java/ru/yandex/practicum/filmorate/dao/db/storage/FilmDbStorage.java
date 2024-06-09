@@ -79,7 +79,6 @@ public class FilmDbStorage implements FilmStorage {
                 "fr.DESCRIPTION AS description_mpa " +
                 "FROM films f " +
                 "LEFT JOIN film_rating fr ON f.film_rating=fr.film_rating_id " +
-                "LEFT JOIN likes l ON f.FILM_ID=l.FILM_ID " +
                 "WHERE f.film_id = ?";
         final List<Film> films = jdbcTemplate.query(query, mapper, id);
         if (films.size() != 1) {
