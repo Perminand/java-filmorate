@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
-import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,12 +25,6 @@ public class BuilderFilm {
                 rs.getString("name"));
     }
 
-    static Mpa makeMpa(ResultSet rs, int rowNum) throws SQLException {
-        return new Mpa(
-                rs.getLong("film_rating_id"),
-                rs.getString("name"),
-                rs.getString("description"));
-    }
 
     static Like makeLike(ResultSet rs, int rowNum) throws SQLException {
         return new Like(
@@ -41,18 +34,9 @@ public class BuilderFilm {
 
     public List<Genre> getFilmGenres(long filmId) {
         String query = "SELECT * FROM genres g, FILM_GENRE fg where fg.GENRE = g.GENRE_ID AND fg.FILM_ID = ?";
-        List<Genre> genreList = jdbcTemplate.query(query, BuilderFilm::makeGenre, filmId);
-        return genreList;
+        return jdbcTemplate.query(query, BuilderFilm::makeGenre, filmId);
     }
 
-    public Mpa getFilmMpa(long filmId) {
-        String query = "SELECT fr.* FROM films f " +
-                "LEFT JOIN film_rating fr " +
-                "ON f.film_rating=fr.film_rating_id " +
-                "WHERE f.FILM_ID  = ?";
-        Mpa mpa = jdbcTemplate.query(query, BuilderFilm::makeMpa, filmId).getFirst();
-        return mpa;
-    }
 
     public Set<Long> getFilmLike(long filmId) {
         String query = "SELECT * FROM likes WHERE film_id = ?";
@@ -67,7 +51,6 @@ public class BuilderFilm {
         long id = film.getId();
         film.setGenres(getFilmGenres(id));
         film.setLikes(getFilmLike(id));
-        film.setMpa(getFilmMpa(id));
         return film;
     }
 }

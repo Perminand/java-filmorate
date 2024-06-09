@@ -26,7 +26,16 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopular(int count) {
-        String query = "SELECT  f.*  FROM films f LEFT JOIN likes l ON f.film_id = l.film_id " +
+        String query = "SELECT f.FILM_ID, " +
+                "f.NAME, f.DESCRIPTION, " +
+                "f.RELEASE_DATE, " +
+                "f.DURATION, " +
+                "fr.film_rating_id, " +
+                "fr.NAME AS name_mpa, " +
+                "fr.DESCRIPTION AS description_mpa " +
+                "FROM films f " +
+                "LEFT JOIN film_rating fr ON f.film_rating=fr.film_rating_id " +
+                "LEFT JOIN likes l ON f.film_id = l.film_id " +
                 "GROUP BY f.film_id " +
                 "ORDER BY COUNT(f.FILM_ID) DESC " +
                 "LIMIT ?";
@@ -49,12 +58,29 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAll() {
-        return jdbcTemplate.query("SELECT * FROM films", mapper);
+        return jdbcTemplate.query("SELECT f.FILM_ID, " +
+                "f.NAME, f.DESCRIPTION, " +
+                "f.RELEASE_DATE, " +
+                "f.DURATION, " +
+                "fr.film_rating_id, " +
+                "fr.NAME AS name_mpa, " +
+                "fr.DESCRIPTION AS description_mpa " +
+                "FROM films f " +
+                "LEFT JOIN film_rating fr ON f.film_rating=fr.film_rating_id;", mapper);
     }
 
     @Override
     public Optional<Film> getById(long id) {
-        String query = "SELECT * FROM films WHERE film_id = ?";
+        String query = "SELECT f.FILM_ID, " +
+                "f.NAME, f.DESCRIPTION, " +
+                "f.RELEASE_DATE, " +
+                "f.DURATION, fr.film_rating_id, " +
+                "fr.NAME AS name_mpa, " +
+                "fr.DESCRIPTION AS description_mpa " +
+                "FROM films f " +
+                "LEFT JOIN film_rating fr ON f.film_rating=fr.film_rating_id " +
+                "LEFT JOIN likes l ON f.FILM_ID=l.FILM_ID " +
+                "WHERE f.film_id = ?";
         final List<Film> films = jdbcTemplate.query(query, mapper, id);
         if (films.size() != 1) {
             throw new EntityNotFoundException("user id = " + id);

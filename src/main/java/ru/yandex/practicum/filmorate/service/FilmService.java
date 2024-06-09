@@ -31,7 +31,9 @@ public class FilmService implements IntefaceService<Film> {
     public Collection<Film> getAll() {
         return filmStorage.getAll()
                 .stream()
-                .map(builderFilm::build).toList();
+                .map(film -> builderFilm.build(film))
+                .toList();
+
     }
 
     public Film getById(long id) {
@@ -88,7 +90,7 @@ public class FilmService implements IntefaceService<Film> {
 
     @Override
     public void delete() {
-
+        filmStorage.delete();
     }
 
     @Override
