@@ -15,10 +15,16 @@ erDiagram
         bigint users_like_id FK
      }
 
-    FILM_CATEGORY {
-        bigint category_id PK
-        text name
+    FILM_GENRE {
+        bigint film_id PK
+        bigint genre FK
     }
+    
+    GENRE {
+        bigint genre_id PK
+        varchar(10) name
+    }
+    
     
     FILM_RATING {
         bigint film_rating_id PK
@@ -43,7 +49,8 @@ erDiagram
     }    
    
 
-    FILM_CATEGORY }|--|| FILMS: film_category_id_to_film_id
+    FILM_GENRE }|--|| FILMS: film_category_id_to_film_id
+    FILM_GENRE ||--|| GENRE film_id_to_genre_id
     FILM_RATING ||--|| FILMS : film_rating_id_to_film_id
     FILMS ||--|{ LIKES : film_id_to_film_id
     LIKES }|--|| USERS : film_id_to_user_id
