@@ -62,14 +62,6 @@ public class UserController {
         return userService.update(user);
     }
 
-    public void delete() {
-        userService.delete();
-    }
-
-    public void deleteById(Long id) {
-        userService.deleteById(id);
-    }
-
     @PutMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
     public void addFriends(@PathVariable("userId") Long userId,
