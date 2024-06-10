@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class FilmJoinGenre {
-    private long id;
+    private long film_id;
+    private Long id;
     private String name;
-    private Long film_id;
 }
 
