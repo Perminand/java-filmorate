@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.dao.db.storage.builders.BuilderFilm;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmJoinGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.time.LocalDate;
@@ -32,8 +33,16 @@ public class FilmService implements IntefaceService<Film> {
         filmList.stream()
                 .map(film -> filmMap.put(film.getId(), film))
                 .toList();
-        List<Film>
-        return builderFilm.buildListFilm(filmList);
+        List<FilmJoinGenre> filmJoinGenres = builderFilm.getFilmJoinGenre(filmMap.keySet().stream().toList());
+        for (FilmJoinGenre fjg : filmJoinGenres) {
+            List<Genre> genreList = filmMap.get(fjg.getFilm_id()).getGenres();
+            if (genreList == null) {
+                genreList = new ArrayList<>();
+            }
+            genreList.add(new Genre(fjg.getId(), fjg.getName()));
+            filmMap.get(fjg.getFilm_id()).setGenres(genreList);
+        }
+        return filmMap.values();
     }
 
     public Film getById(long id) {
