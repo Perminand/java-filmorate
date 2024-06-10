@@ -11,9 +11,11 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmJoinGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Like;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -33,14 +35,26 @@ public class FilmService implements IntefaceService<Film> {
         filmList.stream()
                 .map(film -> filmMap.put(film.getId(), film))
                 .toList();
-        List<FilmJoinGenre> filmJoinGenres = builderFilm.getFilmJoinGenre(filmMap.keySet().stream().toList());
+        List<Long> longList = filmMap.keySet().stream().toList();
+        String stringJoinLongFilmId = longList.stream().map(n -> String.valueOf(n)).collect(Collectors.joining(","));
+        List<FilmJoinGenre> filmJoinGenres = builderFilm.getFilmJoinGenres(stringJoinLongFilmId);
+        List<Like> likeList = builderFilm.getFilmLikes(stringJoinLongFilmId);
         for (FilmJoinGenre fjg : filmJoinGenres) {
             List<Genre> genreList = filmMap.get(fjg.getFilm_id()).getGenres();
+
             if (genreList == null) {
                 genreList = new ArrayList<>();
             }
             genreList.add(new Genre(fjg.getId(), fjg.getName()));
             filmMap.get(fjg.getFilm_id()).setGenres(genreList);
+        }
+        for (Like l : likeList) {
+            Set<Long> likeSetFilm = filmMap.get(l.getId()).getLikes();
+            if (likeSetFilm == null) {
+                likeSetFilm = new HashSet<>();
+            }
+            likeSetFilm.add(l.getUserId());
+            filmMap.get(l.getId()).setLikes(likeSetFilm);
         }
         return filmMap.values();
     }
