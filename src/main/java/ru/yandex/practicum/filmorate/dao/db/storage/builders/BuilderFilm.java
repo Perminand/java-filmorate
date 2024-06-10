@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.model.Like;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,8 +29,8 @@ public class BuilderFilm {
     static FilmJoinGenre makeFilmJoinGenre(ResultSet rs, int rowNum) throws SQLException {
         FilmJoinGenre filmJoinGenre = new FilmJoinGenre(
                 rs.getLong("film_id"),
-                rs.getString("name"),
-                rs.getLong("genre_id")
+                rs.getLong("genre_id"),
+                rs.getString("name")
                 );
         return filmJoinGenre;
     }
@@ -49,17 +48,13 @@ public class BuilderFilm {
         return genreList;
     }
 
-    public List<FilmJoinGenre> getFilmJoinGenre(List<Long> list) {
+    public List<FilmJoinGenre> getFilmJoinGenres(String filmsId) {
         String query = "SELECT * FROM FILM_GENRE fg " +
                 "LEFT JOIN genres g ON fg.GENRE=g.genre_id " +
-                "WHERE fg.FILM_ID IN (?)";
-        String s = list.toString();
-        List<FilmJoinGenre> genreList = jdbcTemplate.query(query, BuilderFilm::makeFilmJoinGenre, s);
+                "WHERE fg.FILM_ID IN (" + filmsId + ")";
+        List<FilmJoinGenre> genreList = jdbcTemplate.query(query, BuilderFilm::makeFilmJoinGenre);
         return genreList;
     }
-
-
-
 
     public Set<Long> getFilmLike(long filmId) {
         String query = "SELECT * FROM likes WHERE film_id = ?";
@@ -70,29 +65,16 @@ public class BuilderFilm {
         return set;
     }
 
+    public List<Like> getFilmLikes(String filmsId) {
+        String query = "SELECT * FROM likes WHERE film_id IN (" + filmsId + ")";
+        List<Like> likesList = jdbcTemplate.query(query, BuilderFilm::makeLike);
+        return likesList;
+    }
+
     public Film build(Film film) {
         long id = film.getId();
         film.setGenres(getFilmGenres(id));
         film.setLikes(getFilmLike(id));
         return film;
     }
-
-//    public List<Film> buildListFilm(List<Film> list) {
-//        List<Long> longList = new ArrayList<>();
-//        for (Film f : list) {
-//            longList.add(f.getId());
-//        }
-//        List<FilmJoinGenre> filmJoinGenres = getFilmJoinGenre(longList);
-//        for (FilmJoinGenre fjg : filmJoinGenres)
-//            for (Film f : list) {
-//                if (fjg.getFilm_id() == f.getId()) {
-//                    if (f.getGenres() == null) {
-//                        f.setGenres(new ArrayList<>());
-//                    }
-//                    List<Genre> genreList = f.getGenres();
-//                    genreList.add(new Genre(fjg.getId(), fjg.getName()));
-//                }
-//            }
-//        return list;
-//    }
 }
