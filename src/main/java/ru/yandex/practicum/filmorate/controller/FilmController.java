@@ -50,14 +50,6 @@ public class FilmController {
         return filmService.update(film);
     }
 
-    public void delete() {
-
-    }
-
-    public void deleteById(Long id) {
-
-    }
-
     @PutMapping("/{filmId}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public Film addLike(@PathVariable("filmId") Long filmId,
