@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmJoinGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +27,13 @@ public class BuilderFilm {
                 rs.getString("name"));
     }
 
+    static FilmJoinGenre makeFilmJoinGenre(ResultSet rs, int rowNum) throws SQLException {
+        return new FilmJoinGenre(
+                rs.getLong("film_id"),
+                rs.getLong("genre_id"),
+                rs.getString("name"));
+    }
+
 
     static Like makeLike(ResultSet rs, int rowNum) throws SQLException {
         return new Like(
@@ -34,8 +43,19 @@ public class BuilderFilm {
 
     public List<Genre> getFilmGenres(long filmId) {
         String query = "SELECT * FROM genres g, FILM_GENRE fg where fg.GENRE = g.GENRE_ID AND fg.FILM_ID = ?";
-        return jdbcTemplate.query(query, BuilderFilm::makeGenre, filmId);
+        List<Genre> genreList = jdbcTemplate.query(query, BuilderFilm::makeGenre, filmId);
+        return genreList;
     }
+
+    public List<FilmJoinGenre> getFilmJoinGenre(List<Long> list) {
+        String query = "SELECT * FROM FILM_GENRE fg " +
+                "LEFT JOIN genres g ON fg.GENRE = g.genre_id " +
+                "WHERE fg.FILM_ID IN (?)";
+        List<FilmJoinGenre> genreList = jdbcTemplate.query(query, BuilderFilm::makeFilmJoinGenre, list.toArray());
+        return genreList;
+    }
+
+
 
 
     public Set<Long> getFilmLike(long filmId) {
@@ -52,5 +72,24 @@ public class BuilderFilm {
         film.setGenres(getFilmGenres(id));
         film.setLikes(getFilmLike(id));
         return film;
+    }
+
+    public List<Film> buildListFilm(List<Film> list) {
+        List<Long> longList = new ArrayList<>();
+        for (Film f : list) {
+            longList.add(f.getId());
+        }
+        List<FilmJoinGenre> filmJoinGenres = getFilmJoinGenre(longList);
+        for (FilmJoinGenre fjg : filmJoinGenres)
+            for (Film f : list) {
+                if (fjg.getFilm_id() == f.getId()) {
+                    if (f.getGenres() == null) {
+                        f.setGenres(new ArrayList<>());
+                    }
+                    List<Genre> genreList = f.getGenres();
+                    genreList.add(new Genre(fjg.getId(), fjg.getName()));
+                }
+            }
+        return list;
     }
 }

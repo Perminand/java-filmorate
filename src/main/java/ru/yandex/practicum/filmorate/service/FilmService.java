@@ -12,9 +12,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -29,11 +27,13 @@ public class FilmService implements IntefaceService<Film> {
     private final MpaService mpaService;
 
     public Collection<Film> getAll() {
-        return filmStorage.getAll()
-                .stream()
-                .map(film -> builderFilm.build(film))
+        List<Film> filmList = filmStorage.getAll();
+        Map<Long, Film> filmMap = new HashMap<>();
+        filmList.stream()
+                .map(film -> filmMap.put(film.getId(), film))
                 .toList();
-
+        List<Film>
+        return builderFilm.buildListFilm(filmList);
     }
 
     public Film getById(long id) {
