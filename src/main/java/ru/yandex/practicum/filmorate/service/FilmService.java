@@ -40,13 +40,13 @@ public class FilmService implements IntefaceService<Film> {
         List<FilmJoinGenre> filmJoinGenres = builderFilm.getFilmJoinGenres(stringJoinLongFilmId);
         List<Like> likeList = builderFilm.getFilmLikes(stringJoinLongFilmId);
         for (FilmJoinGenre fjg : filmJoinGenres) {
-            List<Genre> genreList = filmMap.get(fjg.getFilm_id()).getGenres();
+            List<Genre> genreList = filmMap.get(fjg.getFilmId()).getGenres();
 
             if (genreList == null) {
                 genreList = new ArrayList<>();
             }
             genreList.add(new Genre(fjg.getId(), fjg.getName()));
-            filmMap.get(fjg.getFilm_id()).setGenres(genreList);
+            filmMap.get(fjg.getFilmId()).setGenres(genreList);
         }
         for (Like l : likeList) {
             Set<Long> likeSetFilm = filmMap.get(l.getId()).getLikes();
