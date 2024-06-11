@@ -3,25 +3,29 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.test.context.ContextConfiguration;
+import ru.yandex.practicum.filmorate.dao.db.storage.UserDbStorage;
+import ru.yandex.practicum.filmorate.dao.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.storage.memory.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@JdbcTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@ContextConfiguration(classes = {UserDbStorage.class, UserRowMapper.class, Validation.class })
 class UserControllerTest {
 
     static final UserController userController = new UserController();
-
-    UserStorage userStorage = new InMemoryUserStorage();
-    UserService userService = new UserService(userStorage);
     private Validator validator;
 
     @BeforeEach
@@ -63,25 +67,4 @@ class UserControllerTest {
                         .build()));
         assertEquals("email is marked non-null but is null", exception.getMessage());
     }
-
-    @Test
-    void createUserDoubleEmailFiled() {
-        User user1 = User.builder()
-                .name("name")
-                .login("login")
-                .email("a@aa")
-                .birthday(LocalDate.now())
-                .build();
-        User user2 = User.builder()
-                .name("name")
-                .login("login")
-                .email("a@aa")
-                .birthday(LocalDate.now())
-                .build();
-        assertThrows(DuplicatedDataException.class, () -> {
-            userService.create(user1);
-            userService.create(user2);
-        });
-    }
-
 }

@@ -3,72 +3,93 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.UserStorage;
+import ru.yandex.practicum.filmorate.dao.db.storage.builders.BuilderUser;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements IntefaceService<User> {
     private final UserStorage userStorage;
+    private final BuilderUser builderUser;
 
-    public Collection<User> findAll() {
+    public List<User> getAll() {
         return userStorage.getAll();
     }
 
     public User getById(long id) {
-
-        return userStorage.getById(id).orElseThrow(() -> new EntityNotFoundException("Нет user с заданным ID"));
-
+        User user = userStorage.getById(id).orElseThrow(() -> new EntityNotFoundException("Нет user с заданным ID"));
+        return builderUser.build(user);
     }
 
-    public Collection<User> getFriends(long id) {
-        return userStorage.getFriends(id);
+    public List<User> getFriends(long id) {
+        getById(id);
+        return userStorage.getFriends(id)
+                .stream()
+                .map(builderUser::build)
+                .collect(Collectors.toList());
     }
 
-    public Collection<User> getCommonFriends(long userId, long otherId) {
-        return userStorage.getCommonFriends(userId, otherId);
+    public List<User> getCommonFriends(long userId, long otherId) {
+        return userStorage.getCommonFriends(userId, otherId)
+                .stream()
+                .map(builderUser::build)
+                .collect(Collectors.toList());
     }
 
-    public Optional<User> create(User data) {
+    public User create(User data) {
         validateAll(data);
         if (data.getName() == null || data.getName().isBlank()) {
             data.setName(data.getLogin());
         }
         log.debug("User создан: " + data);
-        return userStorage.create(data);
+        data = userStorage.create(data).get();
+        return getById(data.getId());
     }
 
-    public Optional<User> update(User data) {
+    public User update(User data) {
         if (data.getId() == null) {
-            throw new ValidationException("ID должен быть указан");
+            throw new ValidationException("id должен быть указан");
         }
         final Optional<User> userOptional = userStorage.getById(data.getId());
-        userOptional.orElseThrow(() -> new EntityNotFoundException("Нет user c ID:" + data.getId()));
+        userOptional.orElseThrow(() -> new EntityNotFoundException("Нет user c id:" + data.getId()));
         validateBirthday(data);
-        log.debug("User c ID " + data.getId() + " обновлен");
-        return userStorage.update(data);
+        log.debug("User c id: " + data.getId() + " обновлен");
+        return userStorage.update(data).get();
     }
 
-    public Optional<User> addFriend(long userId, long friendId) {
-        userStorage.findId(userId);
-        userStorage.findId(friendId);
-        return userStorage.addFriend(userId, friendId);
+    @Override
+    public void delete() {
+        userStorage.delete();
+    }
+
+    @Override
+    public void deleteById(long id) {
+        userStorage.deleteById(id);
+    }
+
+    public void addFriend(long userId, long friendId) {
+        userStorage.getById(userId);
+        userStorage.getById(friendId);
+        userStorage.addFriend(userId, friendId);
     }
 
     public User deleteFriend(long userId, long friendId) {
-        userStorage.getById(userId)
+        User user = userStorage.getById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с ID: " + userId));
         userStorage.getById(friendId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет friends с ID: " + friendId));
-        return userStorage.deleteFriend(userId, friendId);
+        userStorage.deleteFriend(userId, friendId);
+        return builderUser.build(user);
     }
 
     public void validateAll(final User newUser) {

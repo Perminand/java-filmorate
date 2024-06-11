@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.dao;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface Storage<T> {
-    Collection<T> getAll();
+    List<T> getAll();
 
     Optional<T> getById(long id);
 
@@ -12,9 +12,9 @@ public interface Storage<T> {
 
     Optional<T> update(T data);
 
-    void deleteById(long id);
+    void delete();
 
-    void findId(long key);
+    void deleteById(long id);
 
 
 }

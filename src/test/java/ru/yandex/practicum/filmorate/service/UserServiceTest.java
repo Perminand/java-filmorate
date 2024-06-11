@@ -1,29 +1,41 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.test.context.ContextConfiguration;
+import ru.yandex.practicum.filmorate.dao.db.storage.UserDbStorage;
+import ru.yandex.practicum.filmorate.dao.db.storage.builders.BuilderUser;
+import ru.yandex.practicum.filmorate.dao.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.storage.memory.InMemoryUserStorage;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@JdbcTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@ContextConfiguration(classes = {UserService.class,
+        UserDbStorage.class,
+        UserRowMapper.class,
+        BuilderUser.class})
 class UserServiceTest {
-    private final UserStorage userStorage = new InMemoryUserStorage();
-    private final UserService userService = new UserService(userStorage);
-    private Validator validator;
+    List<Long> idUsers = new ArrayList<>();
+    private final UserService userService;
 
     @BeforeEach
     public void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
         int i = 1;
         do {
             User user = User.builder()
@@ -31,15 +43,16 @@ class UserServiceTest {
                     .login("login" + i)
                     .email("a@aa" + i + ".ru")
                     .birthday(LocalDate.now())
+                    .friends(new HashSet<>())
                     .build();
-            userService.create(user);
+            idUsers.add(userService.create(user).getId());
             i++;
         } while (i != 10);
     }
 
     @Test
     void create() {
-        int i = userService.findAll().size();
+        int i = userService.getAll().size();
         User user = User.builder()
                 .name("name10")
                 .login("login10")
@@ -47,19 +60,21 @@ class UserServiceTest {
                 .birthday(LocalDate.now())
                 .build();
         userService.create(user);
-        assertEquals(userService.findAll().size(), i + 1);
+        assertEquals(userService.getAll().size(), i + 1);
     }
 
     @Test
     void createDoubleEmail() {
-        int i = userService.findAll().size();
         User user = User.builder()
                 .name("name10")
                 .login("login10")
                 .email("a@aa10.ru")
                 .birthday(LocalDate.now())
+                .friends(new HashSet<>())
                 .build();
-        assertEquals(userService.create(user).get(), user);
+        User createUser = userService.create(user);
+        user.setId(createUser.getId());
+        Assertions.assertEquals(createUser, user);
         DuplicatedDataException exception = assertThrows(DuplicatedDataException.class, () ->
                 userService.create(user));
     }
@@ -81,32 +96,35 @@ class UserServiceTest {
     }
 
     @Test
-    void findAll() {
-        assertEquals(userService.findAll().size(), 9);
+    void getAll() {
+        assertEquals(userService.getAll().size(), 12);
     }
 
     @Test
     void addFriendGetFrends() {
-        int i = 2;
+        int i = 0;
         do {
-            userService.addFriend(1, i);
+            long userId = idUsers.get(i);
+            userService.addFriend(1, userId);
             i++;
-        } while (i != 10);
-        assertEquals(userService.getById(1).getFriends().size(), 8);
+        } while (i != 9);
+        User user = userService.getById(1);
+        Set<Long> longList = user.getFriends();
+        assertEquals(longList.size(), 9);
     }
 
     @Test
     void getCommonFriends() {
         userService.addFriend(1, 2);
-        userService.addFriend(2, 3);
+        userService.addFriend(3, 2);
         assertEquals(userService.getCommonFriends(1, 3).size(), 1);
-
     }
 
     @Test
     void deleteFriend() {
         userService.addFriend(1, 2);
         userService.deleteFriend(1, 2);
-        assertEquals(userService.getFriends(1).size(), 0);
+        List<User> userList = userService.getFriends(1);
+        assertEquals(userList.size(), 0);
     }
 }

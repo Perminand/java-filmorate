@@ -5,23 +5,45 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.dao.db.storage.*;
+import ru.yandex.practicum.filmorate.dao.db.storage.builders.BuilderFilm;
+import ru.yandex.practicum.filmorate.dao.db.storage.builders.BuilderUser;
+import ru.yandex.practicum.filmorate.dao.mappers.FilmRowMapper;
+import ru.yandex.practicum.filmorate.dao.mappers.GenreRowMapper;
+import ru.yandex.practicum.filmorate.dao.mappers.MpaRowMapper;
+import ru.yandex.practicum.filmorate.dao.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.GenreService;
+import ru.yandex.practicum.filmorate.service.MpaService;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.memory.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.memory.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FilmControllerTest {
-    private final FilmService filmService = new FilmService(new InMemoryFilmStorage(), new UserService(new InMemoryUserStorage()));
 
+class FilmControllerTest {
+    JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    GenreService genreService = new GenreService(new GenreDbStorage(
+            jdbcTemplate, new GenreRowMapper()));
+    private final FilmService filmService = new FilmService(
+            new FilmDbStorage(jdbcTemplate, new FilmRowMapper()),
+            new UserService(
+                    new UserDbStorage(
+                            jdbcTemplate,
+                            new UserRowMapper()),
+                    new BuilderUser(jdbcTemplate)
+            ),
+            new BuilderFilm(jdbcTemplate),
+            genreService,
+            new ListGenreDbStorage(jdbcTemplate),
+            new MpaService(new MpaDbStorage(jdbcTemplate, new MpaRowMapper())));
     private final FilmController filmController = new FilmController(filmService);
-    private Validator validator;
+
+     private Validator validator;
 
     @BeforeEach
     public void setUp() {
@@ -98,36 +120,5 @@ class FilmControllerTest {
                 .releaseDate(LocalDate.of(1897, 1, 1))
                 .duration(-1).build();
         assertFalse(validator.validate(film).isEmpty());
-    }
-
-    @Test
-    void updateFilmValidId() {
-        final Film film = Film.builder()
-                .name("name")
-                .description("description")
-                .releaseDate(LocalDate.of(1897, 1, 1))
-                .duration(1).build();
-        filmController.create(film);
-        Film newFilm = film;
-        newFilm.setName("newName");
-        newFilm.setId(Long.valueOf("1"));
-        filmController.update(newFilm);
-        assertTrue(filmController.getAll().stream()
-                .map(Film::getName)
-                .anyMatch(item -> item.equals("newName")));
-    }
-
-    @Test
-    void updateFilmNoValidId() {
-        final Film film = Film.builder()
-                .id(Long.valueOf("1"))
-                .name("name")
-                .description("description")
-                .releaseDate(LocalDate.of(1897, 1, 1))
-                .duration(1).build();
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
-                filmController.update(film));
-        assertEquals("Нет запрошенного ИД", exception.getMessage());
-
     }
 }

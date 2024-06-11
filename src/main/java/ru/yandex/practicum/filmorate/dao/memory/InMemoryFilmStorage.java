@@ -1,9 +1,9 @@
-package ru.yandex.practicum.filmorate.storage.memory;
+package ru.yandex.practicum.filmorate.dao.memory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,6 +11,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorage {
+
+    @Override
+    public Optional<Film> getById(long id) {
+        return Optional.ofNullable(storage.get(id));
+    }
 
     @Override
     public Optional<Film> create(Film data) {
@@ -34,7 +39,12 @@ public class InMemoryFilmStorage extends DataStorage<Film> implements FilmStorag
     }
 
     @Override
-    public Collection<Film> getPopular(int count) {
+    public void delete() {
+        storage.clear();
+    }
+
+    @Override
+    public List<Film> getPopular(int count) {
 
 
         List<Film> films = storage.values()

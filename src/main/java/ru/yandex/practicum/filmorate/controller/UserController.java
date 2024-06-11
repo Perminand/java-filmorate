@@ -25,55 +25,54 @@ public class UserController {
         this.userService = userService;
     }
 
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Collection<User> getAll() {
-        return userService.findAll();
+        return userService.getAll();
     }
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public User getById(@PathVariable("userId") long id) {
+    public User getById(@PathVariable("userId") Long id) {
         return userService.getById(id);
     }
 
     @GetMapping("/{userId}/friends")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<User> getFriends(@PathVariable("userId") long id) {
+    public Collection<User> getFriends(@PathVariable("userId") Long id) {
         return userService.getFriends(id);
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<User> getCommonFriends(@PathVariable("userId") long userId,
-                                             @PathVariable("otherId") long otherId) {
+    public Collection<User> getCommonFriends(@PathVariable("userId") Long userId,
+                                             @PathVariable("otherId") Long otherId) {
         return userService.getCommonFriends(userId, otherId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User create(@Valid @RequestBody final User user) {
-        return userService.create(user).get();
+        return userService.create(user);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public User update(@Valid @RequestBody final User user) {
-        return userService.update(user).get();
+        return userService.update(user);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
-    public User addFriends(@PathVariable("userId") long userId,
-                           @PathVariable("friendId") long friendId) {
-        return userService.addFriend(userId, friendId).get();
+    public void addFriends(@PathVariable("userId") Long userId,
+                                 @PathVariable("friendId") Long friendId) {
+        userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
-    public User deleteFriends(@PathVariable("userId") long userId,
-                              @PathVariable("friendId") long friendId) {
+    public User deleteFriends(@PathVariable("userId") Long userId,
+                              @PathVariable("friendId") Long friendId) {
         return userService.deleteFriend(userId, friendId);
     }
 
