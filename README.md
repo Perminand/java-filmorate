@@ -50,7 +50,7 @@ erDiagram
    
 
     FILM_GENRE }|--|| FILMS: film_category_id_to_film_id
-    FILM_GENRE ||--|| GENRE film_id_to_genre_id
+    FILM_GENRE ||--|| GENRE : film_id_to_genre_id
     FILM_RATING ||--|| FILMS : film_rating_id_to_film_id
     FILMS ||--|{ LIKES : film_id_to_film_id
     LIKES }|--|| USERS : film_id_to_user_id
